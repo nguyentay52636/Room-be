@@ -1,0 +1,20 @@
+# Node.js
+node_modules/
+.env
+.DS_Store
+logs/
+*.log
+npm-debug.log*
+
+# VSCode
+.vscode/
+
+# Ảnh / media nặng
+uploads/
+dataset/
+*.png
+*.jpg
+*.zip
+
+# Thư viện
+coverage/
