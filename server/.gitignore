@@ -1,20 +1,29 @@
 # Node.js
 node_modules/
 .env
-.DS_Store
-logs/
 *.log
 npm-debug.log*
 
 # VSCode
 .vscode/
 
-# Ảnh / media nặng
+# Media / files nặng
 uploads/
 dataset/
 *.png
 *.jpg
 *.zip
+*.mp4
+*.mp3
+*.exe
 
-# Thư viện test
+# Test coverage, build
 coverage/
+dist/
+build/
+
+# Database và file cấu hình nhạy cảm
+*.sqlite
+*.db
+*.bak
+server/config/
