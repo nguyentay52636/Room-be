@@ -16,5 +16,5 @@ dataset/
 *.jpg
 *.zip
 
-# Thư viện
+# Thư viện test
 coverage/
