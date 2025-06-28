@@ -4,26 +4,3 @@ node_modules/
 *.log
 npm-debug.log*
 
-# VSCode
-.vscode/
-
-# Media / files nặng
-uploads/
-dataset/
-*.png
-*.jpg
-*.zip
-*.mp4
-*.mp3
-*.exe
-
-# Test coverage, build
-coverage/
-dist/
-build/
-
-# Database và file cấu hình nhạy cảm
-*.sqlite
-*.db
-*.bak
-server/config/

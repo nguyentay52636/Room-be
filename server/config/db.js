@@ -1,8 +1,10 @@
-export const connectDB = async (url) => {
+const mongoose = require('mongoose');
+const connectDB = async (url) => {
   try {
-        mongoose.connect('url')
+         await mongoose.connect('url')
   }catch (error) {
     console.error('Error connecting to MongoDB:', error);
     throw error;
   }
 }
+module.exports = connectDB;
