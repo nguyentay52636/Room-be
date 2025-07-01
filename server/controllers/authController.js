@@ -39,6 +39,9 @@ const authController = {
         return res.status(400).json({ message: 'Mật khẩu không đúng' });
       }
       if (user && validPassword) {
+        jwt.sign({
+          
+        })
         res.status(200).json(user)
       }
     }catch(err) {
