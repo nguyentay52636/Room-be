@@ -1,8 +1,9 @@
-
 const express = require('express');
 const router = express.Router();
-const accountController = require('../controllers/accountController');
+const authController = require('../controllers/authController');
 
 // Gọi đúng hàm xử lý
-router.get('/', accountController.getAccount);
+router.post('/register', authController.register);
+
+
 module.exports = router;
