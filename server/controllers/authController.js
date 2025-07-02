@@ -2,6 +2,7 @@ const NguoiDung = require('../models/nguoidung');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+let refreshTokens = []; 
 const authController = {
   register : async (req, res) => {
     try{
@@ -28,6 +29,29 @@ const authController = {
       res.status(500).json(err);
     }
   },
+  //GENERATE JWT ACCESS TOKEN
+  generateAccessToken: (user) => {
+    return jwt.sign(
+      {
+        id: user.id,
+        vai_tro: user.vai_tro
+      },
+      process.env.JWT_ACCESS_KEY,
+      { expiresIn: '15m' }
+    );
+  },
+  //GENERATE JWT REFRESH TOKEN
+  generateRefreshToken: (user) => {
+    return jwt.sign(
+      {
+        id: user.id,
+        vai_tro: user.vai_tro
+      },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '365d' }
+    );
+  },
+
   login : async (req, res) => {
     try {
       const user = await NguoiDung.findOne({ten: req.body.ten});
@@ -39,20 +63,52 @@ const authController = {
         return res.status(400).json({ message: 'Mật khẩu không đúng' });
       }
       if (user && validPassword) {
-        const accessToken = jwt.sign(
-        {
-          id: user.id,
-          vai_tro: user.vai_tro
-        },
-        process.env.JWT_SECRET,
-        {expiresIn: '30s'},
-      );
+        const accessToken = authController.generateAccessToken(user);
+        const refreshToken = authController.generateRefreshToken(user);
+        refreshTokens.push(refreshToken); // Store refresh token
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          path : '/', 
+          secure: false,
+          sameSite: 'strict', // Prevent CSRF attacks
+        });
         const { mat_khau, ...otherDetails } = user._doc; 
         res.status(200).json({...otherDetails,accessToken});
       }
     }catch(err) {
       res.status(500).json(err);
     }
+  },
+
+  RequestrefreshToken: async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+    if(!refreshToken)  return res.status(401).json("you're not authenticated");
+    if(!refreshTokens.includes(refreshToken)){
+      return res.status(403).json("refresh token is not valid");
+    }
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET,  (err, user) => {
+      if(err) {
+        console.log(err);
+      }
+    
+      refreshTokens = refreshTokens.filter(token => token !== refreshToken); // Remove used refresh token
+      // create new access token, refresh token
+      const newAccessToken = authController.generateAccessToken(user);
+      const newRefreshToken = authController.generateRefreshToken(user);
+      refreshTokens.push(newRefreshToken); 
+      res.cookie('refreshToken', newrefreshToken, {
+          httpOnly: true,
+          path : '/', 
+          secure: false,
+          sameSite: 'strict', // Prevent CSRF attacks
+      })
+      res.status(200).json({accessToken: newAccessToken});
+    })
+  },
+  userLogout: async (req, res) => {
+    res.clearCookie('refreshToken')
+    refreshTokens = refreshTokens.filter(token => token !== req.cookies.refreshToken);
+    res.status(200).json("Logout successfully");
   }
-};
+}
 module.exports = authController;

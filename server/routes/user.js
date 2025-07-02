@@ -4,5 +4,5 @@ const middlewareController = require('../controllers/middlewareController');
 //get all users
 
 router.get('/',middlewareController.verifyToken,userController.getAllUser);
-router.delete('/:id',userController.deleteUser);
+router.delete('/:id',middlewareController.verifyTokenAndAdminAuth, userController.deleteUser);
 module.exports = router;
