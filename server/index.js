@@ -1,24 +1,23 @@
-const dotenv = require('dotenv');
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const accountRoutes = require('./routes/accountRoutes.js');
-dotenv.config();
-
+const cookieParser = require('cookie-parser');
+const connectDB = require('./config/db'); 
+const PORT = process.env.PORT;
+const dotenv = require('dotenv');
+const authRoutes = require('./routes/auth'); 
+const userRoutes = require('./routes/user');
 const app = express();
-const PORT = process.env.PORT || 8000;
+dotenv.config(); 
 
+connectDB();
 app.use(cors());
 app.use(express.json());
-app.use('/api/v1', accountRoutes);
+app.use(cookieParser()); 
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('MongoDB connected');
-    app.listen(PORT, () => {
-      console.log(`Server is running at http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-  });
+app.use('/v1/auth', authRoutes);
+app.use('/v1/user', userRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
