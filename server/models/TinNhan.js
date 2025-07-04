@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const TinNhanSchema = new mongoose.Schema({
   nguoi_gui_id: { type: mongoose.Schema.Types.ObjectId, ref: 'NguoiDung' },
   nguoi_nhan_id: { type: mongoose.Schema.Types.ObjectId, ref: 'NguoiDung' },
-  noi_dung: { type: String },
+  noi_dung: { type: String , required: true, maxlength: 500 },
   hinh_anh: { type: String }, // nếu có ảnh đính kèm
   da_doc: { type: Boolean, default: false }
 }, {

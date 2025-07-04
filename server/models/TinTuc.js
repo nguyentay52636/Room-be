@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const TinTucSchema = new mongoose.Schema({
-  tieu_de: { type: String },
-  mo_ta: { type: String },
-  noi_dung: { type: String },
+  tieu_de: { type: String , required: true , maxlength: 200 },
+  mo_ta: { type: String , required: true },
+  noi_dung: { type: String , required: true },
   anh_dai_dien: { type: String },
   tac_gia_id: { type: mongoose.Schema.Types.ObjectId, ref: 'NguoiDung' },
 }, {

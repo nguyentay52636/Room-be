@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const BDSchema = new mongoose.Schema({
   tieu_de: String,
   mo_ta: String,
-  loai_bds: { type: String, enum: ['can_ho', 'nha_nguyen_can', 'studio', 'penthouse'] },
+  loai_bds: { type: String, enum: ['can_ho', 'nha_nguyen_can', 'studio', 'penthouse'] , require : true},
   gia: Number,
   dien_tich: Number,
   dia_chi: String,

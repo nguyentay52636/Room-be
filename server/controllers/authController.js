@@ -96,7 +96,7 @@ const authController = {
       const newAccessToken = authController.generateAccessToken(user);
       const newRefreshToken = authController.generateRefreshToken(user);
       refreshTokens.push(newRefreshToken); 
-      res.cookie('refreshToken', newrefreshToken, {
+      res.cookie('refreshToken', newRefreshToken ,{
           httpOnly: true,
           path : '/', 
           secure: false,

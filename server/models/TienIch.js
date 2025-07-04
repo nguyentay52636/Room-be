@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const TienIchSchema = new mongoose.Schema({
-  ten: String,
-  mo_ta: String
+  ten: {type : String, require : true},
+  mo_ta: { type: String, maxlength: 300 }
 });
 
 module.exports = mongoose.model('TienIch', TienIchSchema);
