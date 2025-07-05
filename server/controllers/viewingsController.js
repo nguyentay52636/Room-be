@@ -33,7 +33,8 @@ const viewingsController = {
     // Cập nhật lịch xem nhà
     updateViewing: async (req, res) => {
         try {
-            const updatedViewing = await viewings.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            const { id } = req.params;
+            const updatedViewing = await viewings.findByIdAndUpdate(id, req.body, { new: true });
             if (!updatedViewing) {
                 return res.status(404).json({ message: 'Không tìm thấy lịch xem nhà để cập nhật' });
             }
@@ -45,7 +46,8 @@ const viewingsController = {
     // Xóa lịch xem nhà
     deleteViewing: async (req, res) =>{
         try {
-            const deletedViewing = await viewings.findByIdAndDelete(req.params.id);
+            const { id } = req.params;
+            const deletedViewing = await viewings.findByIdAndDelete(id);
             if (!deletedViewing) {
                 return res.status(404).json({ message: 'Không tìm thấy lịch xem nhà để xóa' });
             }

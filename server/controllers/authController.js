@@ -16,11 +16,9 @@ const authController = {
       const newUser = new NguoiDung({
         ten: req.body.ten,
         email: req.body.email,
+        ten_dang_nhap: req.body.ten_dang_nhap,
         mat_khau: hashedPassword,
-        so_dien_thoai: req.body.so_dien_thoai,
-        vai_tro: req.body.vai_tro || 'nguoi_thue',
-        anh_dai_dien: req.body.anh_dai_dien || '',
-        trang_thai: req.body.trang_thai || 'hoat_dong'
+        so_dien_thoai: req.body.so_dien_thoai
       });
       // save user database
       const user = await newUser.save();
@@ -54,7 +52,7 @@ const authController = {
 
   login : async (req, res) => {
     try {
-      const user = await NguoiDung.findOne({ten: req.body.ten});
+      const user = await NguoiDung.findOne({ten_dang_nhap: req.body.ten_dang_nhap});
       if (!user) {
         return res.status(404).json({ message: 'Người dùng không tồn tại' });
       }
