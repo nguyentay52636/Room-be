@@ -1,10 +1,17 @@
 const NguoiDung = require('../models/nguoidung');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const {registerValidation,loginValidation} = require('../validations/authValidation');
 let refreshTokens = []; 
+
+
+
 const authController = {
   register : async (req, res) => {
+    const {error} = registerValidation(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
     try{
       const existingUser = await NguoiDung.findOne({ email: req.body.email });
       if (existingUser) {
@@ -52,6 +59,10 @@ const authController = {
 
   login : async (req, res) => {
     try {
+      const {error} = loginValidation(req.body);
+      if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+      }
       const user = await NguoiDung.findOne({ten_dang_nhap: req.body.ten_dang_nhap});
       if (!user) {
         return res.status(404).json({ message: 'Người dùng không tồn tại' });
