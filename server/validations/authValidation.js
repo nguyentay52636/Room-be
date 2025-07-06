@@ -7,7 +7,7 @@ const registerValidation = (data) => {
     ten_dang_nhap: Joi.string().required(),
     mat_khau: Joi.string().min(6).required(),
     xac_nhan_mat_khau: Joi.any().valid(Joi.ref('mat_khau')).required().messages({
-      'any.only': 'Xác nhận mật khẩu không khớp'
+      'any.only': 'Mật khẩu xác nhận không khớp'
     }),
     so_dien_thoai: Joi.string().pattern(/^[0-9]{10,11}$/).required()
   });

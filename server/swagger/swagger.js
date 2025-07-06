@@ -1,23 +1,26 @@
-// swagger.js
+// server/swagger/swagger.js
 const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: '3.0.4',
     info: {
-      title: 'Property API',
-      version: '1.0.0',
-      description: 'Swagger tài liệu API cho hệ thống quản lý bất động sản',
+      title: 'Real Estate API Docs',
+      version: '1.0.12',
+      description: 'Documentation for Bất Động Sản Project',
     },
     servers: [
-      {
-        url: 'http://localhost:8000', 
-      },
+      { url: 'http://localhost:8000' },
     ],
   },
-  apis: ['./swagger/*.swagger.js'], // Đọc từ các file swagger riêng
+  apis: [
+    path.join(__dirname, '../routes/*.js'),      
+    path.join(__dirname, './*.js'),           
+  ],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
-module.exports = swaggerSpec;
+module.exports = { swaggerSpec, swaggerUi };

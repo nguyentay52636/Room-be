@@ -17,7 +17,7 @@ const favoriteController = {
 
       const newFavorite = new Favorite({ nguoi_dung_id, bat_dong_san_id });
       await newFavorite.save();
-      res.status(201).json(newFavorite);
+      res.status(201).json({ message: 'Added to favorites', favorite: newFavorite });
     } catch (err) {
       res.status(500).json({ message: err.message });
     }

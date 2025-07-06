@@ -12,6 +12,10 @@ const authController = {
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
+    // So sánh mật khẩu và xác nhận mật khẩu
+    if (req.body.mat_khau !== req.body.xac_nhan_mat_khau) {
+      return res.status(400).json({ message: 'Mật khẩu xác nhận không khớp' });
+    }
     try{
       const existingUser = await NguoiDung.findOne({ email: req.body.email });
       if (existingUser) {
@@ -29,7 +33,7 @@ const authController = {
       });
       // save user database
       const user = await newUser.save();
-      res.status(200).json(user);
+      res.status(201).json({message: 'Đăng ký thành công', user: user});
     }catch(err){
       res.status(500).json(err);
     }
@@ -82,7 +86,7 @@ const authController = {
           sameSite: 'strict', // Prevent CSRF attacks
         });
         const { mat_khau, ...otherDetails } = user._doc; 
-        res.status(200).json({...otherDetails,accessToken});
+        res.status(200).json({message :"login successfully" ,...otherDetails,accessToken});
       }
     }catch(err) {
       res.status(500).json(err);

@@ -25,7 +25,7 @@ const viewingsController = {
                 trang_thai: req.body.trang_thai
             });
             const savedViewing = await newViewing.save();
-            res.status(201).json(savedViewing);
+            res.status(201).json({message : "Created view successfully ",savedViewing});
         } catch (err) {
             res.status(500).json({ message: 'Lỗi khi tạo lịch xem nhà', error: err });
         }

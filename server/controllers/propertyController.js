@@ -5,7 +5,7 @@ const propertyController = {
     getAllproperty : async(req,res)=>{
         try {
             const properties = await property.find().populate('nguoi_dung_id');
-            res.status(200).json(properties)
+            res.status(200).json({message : "Get all property succesfully ",properties})
         }catch(err){
             return res.status(500).json({message:err.message})
         }
@@ -18,7 +18,7 @@ const propertyController = {
             if (!propertyData) {
                 return res.status(404).json({message: "Property not found"});
             }
-            res.status(200).json(propertyData);
+            res.status(200).json({message : "Property found", propertyData});
         } catch (err) {
             return res.status(500).json({message: err.message});
         }
@@ -28,7 +28,7 @@ const propertyController = {
         try {
             const newProperty = new property(req.body);
             const savedProperty = await newProperty.save();
-            res.status(201).json(savedProperty);
+            res.status(201).json({message: "Property created", savedProperty});
         } catch (err) {
             return res.status(500).json({message: err.message});
         }
@@ -41,7 +41,7 @@ const propertyController = {
             if (!updatedProperty) {
                 return res.status(404).json({message: "Property not found"});
             }
-            res.status(200).json(updatedProperty);
+            res.status(200).json({message : "update property", updatedProperty});
         } catch (err) {
             return res.status(500).json({message: err.message});
         }
