@@ -42,7 +42,8 @@ const checkTokenRef = async (token) => {
 		return error;
 	});
 };
-export {
+
+module.exports = {
 	createToken,
 	checkToken,
 	dataToken,
