@@ -19,7 +19,7 @@ const middlewareController = {
 
     verifyTokenAndAdminAuth : (req,res,next) => {
         middlewareController.verifyToken(req, res, () => {
-            if (req.user.vai_tro === 'admin' || req.user.id === req.params.id) {
+            if (req.user.vaiTro === 'admin' || req.user.id === req.params.id) {
                 next();
             } else {
                 res.status(403).json("You are not allowed to delete other!");

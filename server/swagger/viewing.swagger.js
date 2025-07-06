@@ -15,20 +15,20 @@
  *         _id:
  *           type: string
  *           description: ID của lịch xem nhà
- *         nguoi_dung_id:
+ *         nguoiDungId:
  *           type: string
  *           description: ID người dùng đặt lịch
- *         bat_dong_san_id:
+ *         batDongSanId:
  *           type: string
  *           description: ID bất động sản
- *         thoi_gian:
+ *         thoiGian:
  *           type: string
  *           format: date-time
  *           description: Thời gian xem nhà
- *         ghi_chu:
+ *         ghiChu:
  *           type: string
  *           description: Ghi chú thêm
- *         trang_thai:
+ *         trangThai:
  *           type: string
  *           enum: [cho_xac_nhan, da_xac_nhan, da_huy]
  *           description: Trạng thái lịch xem nhà
@@ -66,20 +66,20 @@
  *           schema:
  *             type: object
  *             required:
- *               - nguoi_dung_id
- *               - bat_dong_san_id
- *               - thoi_gian
+ *               - nguoiDungId
+ *               - batDongSanId
+ *               - thoiGian
  *             properties:
- *               nguoi_dung_id:
+ *               nguoiDungId:
  *                 type: string
- *               bat_dong_san_id:
+ *               batDongSanId:
  *                 type: string
- *               thoi_gian:
+ *               thoiGian:
  *                 type: string
  *                 format: date-time
- *               ghi_chu:
+ *               ghiChu:
  *                 type: string
- *               trang_thai:
+ *               trangThai:
  *                 type: string
  *                 enum: [cho_xac_nhan, da_xac_nhan, da_huy]
  *     responses:
@@ -112,12 +112,12 @@
  *           schema:
  *             type: object
  *             properties:
- *               thoi_gian:
+ *               thoiGian:
  *                 type: string
  *                 format: date-time
- *               ghi_chu:
+ *               ghiChu:
  *                 type: string
- *               trang_thai:
+ *               trangThai:
  *                 type: string
  *                 enum: [cho_xac_nhan, da_xac_nhan, da_huy]
  *     responses:

@@ -14,17 +14,17 @@
  *       properties:
  *         _id:
  *           type: string
- *         nguoi_dung_id:
+ *         nguoiDungId:
  *           type: string
  *           description: ID người dùng
- *         bat_dong_san_id:
+ *         batDongSanId:
  *           type: string
  *           description: ID bất động sản
- *         so_sao:
+ *         soSao:
  *           type: number
  *           minimum: 1
  *           maximum: 5
- *         binh_luan:
+ *         binhLuan:
  *           type: string
  *         createdAt:
  *           type: string
@@ -104,17 +104,17 @@
  *           schema:
  *             type: object
  *             required:
- *               - nguoi_dung_id
- *               - bat_dong_san_id
- *               - so_sao
+ *               - nguoiDungId
+ *               - batDongSanId
+ *               - soSao
  *             properties:
- *               nguoi_dung_id:
+ *               nguoiDungId:
  *                 type: string
- *               bat_dong_san_id:
+ *               batDongSanId:
  *                 type: string
- *               so_sao:
+ *               soSao:
  *                 type: number
- *               binh_luan:
+ *               binhLuan:
  *                 type: string
  *     responses:
  *       201:
@@ -163,9 +163,9 @@
  *           schema:
  *             type: object
  *             properties:
- *               so_sao:
+ *               soSao:
  *                 type: number
- *               binh_luan:
+ *               binhLuan:
  *                 type: string
  *     responses:
  *       200:

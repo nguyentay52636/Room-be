@@ -4,8 +4,6 @@ const jwt = require('jsonwebtoken');
 const {registerValidation,loginValidation} = require('../validations/authValidation');
 let refreshTokens = []; 
 
-
-
 const authController = {
   register : async (req, res) => {
     const {error} = registerValidation(req.body);
@@ -13,7 +11,7 @@ const authController = {
       return res.status(400).json({ message: error.details[0].message });
     }
     // So sánh mật khẩu và xác nhận mật khẩu
-    if (req.body.mat_khau !== req.body.xac_nhan_mat_khau) {
+    if (req.body.matKhau !== req.body.xacNhanMatKhau) {
       return res.status(400).json({ message: 'Mật khẩu xác nhận không khớp' });
     }
     try{
@@ -22,14 +20,14 @@ const authController = {
         return res.status(400).json({ message: 'Email đã tồn tại' });
       }
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(req.body.mat_khau, salt);
+      const hashedPassword = await bcrypt.hash(req.body.matKhau, salt);
       // create new user
       const newUser = new NguoiDung({
         ten: req.body.ten,
         email: req.body.email,
-        ten_dang_nhap: req.body.ten_dang_nhap,
-        mat_khau: hashedPassword,
-        so_dien_thoai: req.body.so_dien_thoai
+        tenDangNhap: req.body.tenDangNhap,
+        matKhau: hashedPassword,
+        soDienThoai: req.body.soDienThoai
       });
       // save user database
       const user = await newUser.save();
@@ -43,7 +41,7 @@ const authController = {
     return jwt.sign(
       {
         id: user.id,
-        vai_tro: user.vai_tro
+        vaiTro: user.vaiTro
       },
       process.env.JWT_ACCESS_KEY,
       { expiresIn: '15m' }
@@ -54,7 +52,7 @@ const authController = {
     return jwt.sign(
       {
         id: user.id,
-        vai_tro: user.vai_tro
+        vaiTro: user.vaiTro
       },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: '365d' }
@@ -67,11 +65,11 @@ const authController = {
       if (error) {
         return res.status(400).json({ message: error.details[0].message });
       }
-      const user = await NguoiDung.findOne({ten_dang_nhap: req.body.ten_dang_nhap});
+      const user = await NguoiDung.findOne({tenDangNhap: req.body.tenDangNhap});
       if (!user) {
         return res.status(404).json({ message: 'Người dùng không tồn tại' });
       }
-      const validPassword = await bcrypt.compare(req.body.mat_khau, user.mat_khau);
+      const validPassword = await bcrypt.compare(req.body.matKhau, user.matKhau);
       if (!validPassword) {
         return res.status(400).json({ message: 'Mật khẩu không đúng' });
       }
@@ -85,7 +83,7 @@ const authController = {
           secure: false,
           sameSite: 'strict', // Prevent CSRF attacks
         });
-        const { mat_khau, ...otherDetails } = user._doc; 
+        const { matKhau, ...otherDetails } = user._doc; 
         res.status(200).json({message :"login successfully" ,...otherDetails,accessToken});
       }
     }catch(err) {
@@ -93,7 +91,7 @@ const authController = {
     }
   },
 
-  RequestrefreshToken: async (req, res) => {
+  requestRefreshToken: async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     if(!refreshToken)  return res.status(401).json("you're not authenticated");
     if(!refreshTokens.includes(refreshToken)){
@@ -121,6 +119,6 @@ const authController = {
   userLogout: async (req, res) => {
     res.clearCookie('refreshToken');
     res.status(200).json("Logout successfully");
-}
+  }
 }
 module.exports = authController;

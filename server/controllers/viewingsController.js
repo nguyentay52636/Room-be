@@ -17,12 +17,13 @@ const viewingsController = {
     // Tạo mới lịch xem nhà
     createViewing: async (req, res) => {
         try {
+            const { nguoiDungId, batDongSanId, thoiGian, ghiChu, trangThai } = req.body;
             const newViewing = new viewings({
-                nguoi_dung_id: req.body.nguoi_dung_id,
-                bat_dong_san_id: req.body.bat_dong_san_id,
-                thoi_gian: req.body.thoi_gian,
-                ghi_chu: req.body.ghi_chu,
-                trang_thai: req.body.trang_thai
+                nguoi_dung_id: nguoiDungId,
+                bat_dong_san_id: batDongSanId,
+                thoi_gian: thoiGian,
+                ghi_chu: ghiChu,
+                trang_thai: trangThai
             });
             const savedViewing = await newViewing.save();
             res.status(201).json({message : "Created view successfully ",savedViewing});

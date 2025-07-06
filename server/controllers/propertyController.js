@@ -2,7 +2,7 @@ const property= require('../models/BatDongSan');
 
 const propertyController = {  
     // GET property
-    getAllproperty : async(req,res)=>{
+    getAllProperty : async(req,res)=>{
         try {
             const properties = await property.find().populate('nguoi_dung_id');
             res.status(200).json({message : "Get all property succesfully ",properties})
@@ -11,7 +11,7 @@ const propertyController = {
         }
     },
     // GET property by id
-    getpropertyById: async(req,res)=>{
+    getPropertyById: async(req,res)=>{
         try {
             const propertyId = req.params.id;
             const propertyData = await property.findById(propertyId).populate('nguoi_dung_id');

@@ -12,53 +12,53 @@
  *     Property:
  *       type: object
  *       required:
- *         - tieu_de
- *         - mo_ta
- *         - loai_bds
+ *         - tieuDe
+ *         - moTa
+ *         - loaiBds
  *         - gia
- *         - dien_tich
- *         - dia_chi
- *         - tinh_thanh
- *         - quan_huyen
- *         - anh_dai_dien
- *         - phong_ngu
- *         - phong_tam
- *         - cho_dau_xe
- *         - nguoi_dung_id
+ *         - dienTich
+ *         - diaChi
+ *         - tinhThanh
+ *         - quanHuyen
+ *         - anhDaiDien
+ *         - phongNgu
+ *         - phongTam
+ *         - choDauXe
+ *         - nguoiDungId
  *       properties:
- *         tieu_de:
+ *         tieuDe:
  *           type: string
- *         mo_ta:
+ *         moTa:
  *           type: string
- *         loai_bds:
+ *         loaiBds:
  *           type: string
  *           enum: [can_ho, nha_nguyen_can, studio, penthouse]
  *         gia:
  *           type: number
- *         dien_tich:
+ *         dienTich:
  *           type: number
- *         dia_chi:
+ *         diaChi:
  *           type: string
- *         tinh_thanh:
+ *         tinhThanh:
  *           type: string
- *         quan_huyen:
+ *         quanHuyen:
  *           type: string
- *         anh_dai_dien:
+ *         anhDaiDien:
  *           type: string
  *         gallery:
  *           type: array
  *           items:
  *             type: string
- *         phong_ngu:
+ *         phongNgu:
  *           type: number
- *         phong_tam:
+ *         phongTam:
  *           type: number
- *         cho_dau_xe:
+ *         choDauXe:
  *           type: number
- *         trang_thai:
+ *         trangThai:
  *           type: string
  *           enum: [dang_hoat_dong, da_cho_thue]
- *         nguoi_dung_id:
+ *         nguoiDungId:
  *           type: string
  *         badge:
  *           type: string
@@ -82,7 +82,7 @@
  *               type: string
  *             location:
  *               type: string
- *             price_display:
+ *             priceDisplay:
  *               type: string
  *             rating:
  *               type: number
@@ -92,18 +92,18 @@
  *               type: array
  *               items:
  *                 type: string
- *         color_gradient:
+ *         colorGradient:
  *           type: string
- *         thong_tin_chi_tiet:
+ *         thongTinChiTiet:
  *           type: object
  *           properties:
  *             tang:
  *               type: string
  *             huong:
  *               type: string
- *             ban_cong:
+ *             banCong:
  *               type: string
- *             noi_that:
+ *             noiThat:
  *               type: string
  */
 

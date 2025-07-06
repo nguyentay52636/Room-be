@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const TienIchSchema = new mongoose.Schema({
   ten: {type : String, require : true},
-  mo_ta: { type: String, maxlength: 300 }
+  moTa: { type: String, maxlength: 300 }
   
 });
 

@@ -5,7 +5,7 @@ const reviewController = {
     getAllReviews: async (req, res) => {
         try {
             const reviews = await Review.find()
-                .populate('nguoi_dung_id')
+                .populate('nguoiDungId')
                 .populate('bat_dong_san_id');
             res.status(200).json({message : "get successful review list",reviews});
         } catch (err) {
@@ -13,11 +13,26 @@ const reviewController = {
         }
     },
 
+    // Lấy đánh giá theo ID
+    getReviewById: async (req, res) => {
+        try {
+            const review = await Review.findById(req.params.id)
+                .populate('nguoiDungId')
+                .populate('bat_dong_san_id');
+            if (!review) {
+                return res.status(404).json({ message: 'Review not found' });
+            }
+            res.status(200).json({message : "get successful review by ID", review});
+        } catch (err) {
+            res.status(500).json({ message: 'Error while getting review by ID', error: err });
+        }
+    },
+
     // Lấy đánh giá theo bất động sản
     getReviewsByProperty: async (req, res) => {
         try {
-            const reviews = await Review.find({ bat_dong_san_id: req.params.id })
-                .populate('nguoi_dung_id');
+            const reviews = await Review.find({ bat_dong_san_id: req.params.propertyId })
+                .populate('nguoiDungId');
             res.status(200).json({message : "get successful review by Id property ",reviews});
         } catch (err) {
             res.status(500).json({ message: 'Error while getting review by Id', error: err });
@@ -27,7 +42,7 @@ const reviewController = {
     // Lấy đánh giá theo user
     getReviewsByUser: async (req, res) => {
         try {
-            const reviews = await Review.find({ nguoi_dung_id: req.params.id })
+            const reviews = await Review.find({ nguoiDungId: req.params.userId })
                 .populate('bat_dong_san_id');
             res.status(200).json({message : "get successful review by Id user ",reviews});
         } catch (err) {
@@ -38,13 +53,14 @@ const reviewController = {
     // Tạo mới đánh giá
     createReview: async (req, res) => {
         try {
+            const { soSao, binhLuan, nguoiDungId, batDongSanId } = req.body;
             const newReview = new Review({
-                so_sao: req.body.so_sao,
-                binh_luan: req.body.binh_luan,
-                nguoi_dung_id: req.body.nguoi_dung_id,
-                bat_dong_san_id: req.body.bat_dong_san_id
+                so_sao: soSao,
+                binh_luan: binhLuan,
+                nguoiDungId: nguoiDungId,
+                bat_dong_san_id: batDongSanId
             });
-            if (!newReview.so_sao || !newReview.binh_luan || !newReview.nguoi_dung_id || !newReview.bat_dong_san_id) {
+            if (!newReview.so_sao || !newReview.binh_luan || !newReview.nguoiDungId || !newReview.bat_dong_san_id) {
                 return res.status(400).json({ message: 'Missing information needed review' });
             }
             const savedReview = await newReview.save();
@@ -70,11 +86,12 @@ const reviewController = {
     // Cập nhật đánh giá
     updateReview: async (req, res) => {
         try {
+            const { soSao, binhLuan } = req.body;
             const updatedReview = await Review.findByIdAndUpdate(
                 req.params.id,
                 {
-                    so_sao: req.body.so_sao,
-                    binh_luan: req.body.binh_luan
+                    so_sao: soSao,
+                    binh_luan: binhLuan
                 },
                 { new: true }
             );

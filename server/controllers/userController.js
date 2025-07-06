@@ -3,8 +3,8 @@ const User = require('../models/nguoidung');
 const userController = {
     getAllUser: async (req, res) =>{
         try {
-            const user = await User.find();
-            res.status(200).json({message :"lấy dữ liệu thành công",user});
+            const users = await User.find();
+            res.status(200).json({message :"lấy dữ liệu thành công",users});
         } catch (err) {
             res.status(500).json(err);
         }

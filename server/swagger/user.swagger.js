@@ -19,7 +19,7 @@
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Nguoidung'
+ *                 $ref: '#/components/schemas/NguoiDung'
  *       500:
  *         description: Lỗi server
  */

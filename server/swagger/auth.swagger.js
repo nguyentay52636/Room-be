@@ -18,18 +18,18 @@
  *           type: string
  *         email:
  *           type: string
- *         ten_dang_nhap:
+ *         tenDangNhap:
  *           type: string
- *         mat_khau:
+ *         matKhau:
  *           type: string
- *         so_dien_thoai:
+ *         soDienThoai:
  *           type: string
- *         vai_tro:
+ *         vaiTro:
  *           type: string
  *           enum: [chu_tro, nguoi_thue, admin]
- *         anh_dai_dien:
+ *         anhDaiDien:
  *           type: string
- *         trang_thai:
+ *         trangThai:
  *           type: string
  *           enum: [hoat_dong, khoa]
  *         createdAt:
@@ -56,23 +56,23 @@
  *             required:
  *               - ten
  *               - email
- *               - ten_dang_nhap
- *               - mat_khau
- *               - xac_nhan_mat_khau
+ *               - tenDangNhap
+ *               - matKhau
+ *               - xacNhanMatKhau
  *             properties:
  *               ten:
  *                 type: string
  *               email:
  *                 type: string
- *               ten_dang_nhap:
+ *               tenDangNhap:
  *                 type: string
- *               mat_khau:
- *                 type: string
- *                 format: password
- *               xac_nhan_mat_khau:
+ *               matKhau:
  *                 type: string
  *                 format: password
- *               so_dien_thoai:
+ *               xacNhanMatKhau:
+ *                 type: string
+ *                 format: password
+ *               soDienThoai:
  *                 type: string
  *     responses:
  *       200:
@@ -93,12 +93,12 @@
  *           schema:
  *             type: object
  *             required:
- *               - ten_dang_nhap
- *               - mat_khau
+ *               - tenDangNhap
+ *               - matKhau
  *             properties:
- *               ten_dang_nhap:
+ *               tenDangNhap:
  *                 type: string
- *               mat_khau:
+ *               matKhau:
  *                 type: string
  *     responses:
  *       200:
