@@ -36,7 +36,7 @@
 
 /**
  * @swagger
- * /api/review/getAllReviews:
+ * /api/review/reviews:
  *   get:
  *     summary: Lấy tất cả đánh giá
  *     tags: [Review]
@@ -53,13 +53,33 @@
 
 /**
  * @swagger
- * /api/review/getReviewsByProperty/{id}:
+ * /api/review/{id}:
+ *   get:
+ *     summary: Lấy đánh giá theo ID
+ *     tags: [Review]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID đánh giá
+ *     responses:
+ *       200:
+ *         description: Thông tin đánh giá
+ *       404:
+ *         description: Không tìm thấy đánh giá
+ */
+
+/**
+ * @swagger
+ * /api/review/property/{propertyId}:
  *   get:
  *     summary: Lấy đánh giá theo bất động sản
  *     tags: [Review]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: propertyId
  *         required: true
  *         schema:
  *           type: string
@@ -73,13 +93,13 @@
 
 /**
  * @swagger
- * /api/review/getReviewsByUser/{id}:
+ * /api/review/user/{userId}:
  *   get:
  *     summary: Lấy đánh giá theo người dùng
  *     tags: [Review]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: userId
  *         required: true
  *         schema:
  *           type: string
@@ -93,10 +113,30 @@
 
 /**
  * @swagger
- * /api/review/createReview:
+ * /api/review/property/{id}/stats:
+ *   get:
+ *     summary: Lấy thống kê đánh giá theo bất động sản
+ *     tags: [Review]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID bất động sản
+ *     responses:
+ *       200:
+ *         description: Thống kê trung bình và tổng số đánh giá
+ */
+
+/**
+ * @swagger
+ * /api/review:
  *   post:
  *     summary: Tạo mới đánh giá
  *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -114,41 +154,27 @@
  *                 type: string
  *               soSao:
  *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
  *               binhLuan:
  *                 type: string
  *     responses:
  *       201:
  *         description: Tạo thành công
+ *       401:
+ *         description: Không có quyền truy cập
  *       500:
  *         description: Lỗi server
  */
 
 /**
  * @swagger
- * /api/review/deleteReview/{id}:
- *   delete:
- *     summary: Xóa đánh giá theo ID
- *     tags: [Review]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID đánh giá
- *     responses:
- *       200:
- *         description: Xóa thành công
- *       404:
- *         description: Không tìm thấy
- */
-
-/**
- * @swagger
- * /api/review/updateReview/{id}:
+ * /api/review/{id}:
  *   put:
  *     summary: Cập nhật đánh giá
  *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -165,29 +191,39 @@
  *             properties:
  *               soSao:
  *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
  *               binhLuan:
  *                 type: string
  *     responses:
  *       200:
  *         description: Cập nhật thành công
+ *       401:
+ *         description: Không có quyền truy cập
  *       404:
  *         description: Không tìm thấy đánh giá
  */
 
 /**
  * @swagger
- * /api/review/getRatingStatsByProperty/{id}:
- *   get:
- *     summary: Lấy thống kê đánh giá theo bất động sản
+ * /api/review/{id}:
+ *   delete:
+ *     summary: Xóa đánh giá theo ID
  *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: ID bất động sản
+ *         description: ID đánh giá
  *     responses:
  *       200:
- *         description: Thống kê trung bình và tổng số đánh giá
+ *         description: Xóa thành công
+ *       401:
+ *         description: Không có quyền truy cập
+ *       404:
+ *         description: Không tìm thấy
  */
