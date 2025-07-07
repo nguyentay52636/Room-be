@@ -52,6 +52,8 @@
  *   post:
  *     summary: Tạo mới đánh giá
  *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -69,11 +71,15 @@
  *                 type: string
  *               soSao:
  *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
  *               binhLuan:
  *                 type: string
  *     responses:
  *       201:
  *         description: Tạo thành công
+ *       401:
+ *         description: Không có quyền truy cập
  *       500:
  *         description: Lỗi server
  */
@@ -98,9 +104,13 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Review'
+ *       404:
+ *         description: Không tìm thấy đánh giá
  *   put:
  *     summary: Cập nhật đánh giá
  *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -117,16 +127,22 @@
  *             properties:
  *               soSao:
  *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
  *               binhLuan:
  *                 type: string
  *     responses:
  *       200:
  *         description: Cập nhật thành công
+ *       401:
+ *         description: Không có quyền truy cập
  *       404:
  *         description: Không tìm thấy đánh giá
  *   delete:
  *     summary: Xoá đánh giá theo ID
  *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -137,6 +153,8 @@
  *     responses:
  *       200:
  *         description: Xoá thành công
+ *       401:
+ *         description: Không có quyền truy cập
  *       404:
  *         description: Không tìm thấy
  */
