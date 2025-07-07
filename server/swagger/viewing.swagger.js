@@ -36,7 +36,7 @@
 
 /**
  * @swagger
- * /api/viewing/getAllViewing:
+ * /api/viewing:
  *   get:
  *     summary: Lấy danh sách tất cả lịch xem nhà
  *     tags: [Viewing]
@@ -51,11 +51,6 @@
  *                 $ref: '#/components/schemas/Viewing'
  *       500:
  *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/viewing/createViewing:
  *   post:
  *     summary: Tạo lịch xem nhà mới
  *     tags: [Viewing]
@@ -95,7 +90,7 @@
 
 /**
  * @swagger
- * /api/viewing/updateViewing/{id}:
+ * /api/viewing/{id}:
  *   put:
  *     summary: Cập nhật lịch xem nhà
  *     tags: [Viewing]
@@ -131,11 +126,6 @@
  *         description: Không tìm thấy lịch xem nhà
  *       500:
  *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/viewing/deleteViewing/{id}:
  *   delete:
  *     summary: Xoá lịch xem nhà
  *     tags: [Viewing]

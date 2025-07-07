@@ -1,7 +1,11 @@
-const express = require('express')
-const router = express.Router()
-const favoriteController = require('../controllers/favoriteController')
+const express = require("express");
+const router = express.Router();
+const favoriteController = require("../controllers/favoriteController");
 
-router.post('/createFavorite',favoriteController.createFavorite)
-router.delete('/deleteFavorite',favoriteController.deleteFavorite)
-module.exports=router
+// POST /favorite
+router.post("/", favoriteController.createFavorite);
+
+// DELETE /favorite
+router.delete("/", favoriteController.deleteFavorite);
+
+module.exports = router;

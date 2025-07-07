@@ -22,7 +22,7 @@ const reviewController = {
             if (!review) {
                 return res.status(404).json({ message: 'Review not found' });
             }
-            res.status(200).json({message : "get successful review by ID", review});
+            res.status(200).json({message : "Get review by id successfully", review});
         } catch (err) {
             res.status(500).json({ message: 'Error while getting review by ID', error: err });
         }
@@ -33,7 +33,7 @@ const reviewController = {
         try {
             const reviews = await Review.find({ bat_dong_san_id: req.params.propertyId })
                 .populate('nguoiDungId');
-            res.status(200).json({message : "get successful review by Id property ",reviews});
+            res.status(200).json({message : "Get review by property successfully",reviews});
         } catch (err) {
             res.status(500).json({ message: 'Error while getting review by Id', error: err });
         }
@@ -44,7 +44,7 @@ const reviewController = {
         try {
             const reviews = await Review.find({ nguoiDungId: req.params.userId })
                 .populate('bat_dong_san_id');
-            res.status(200).json({message : "get successful review by Id user ",reviews});
+            res.status(200).json({message : "Get review by user successfully",reviews});
         } catch (err) {
             res.status(500).json({ message: 'Error while getting review by User', error: err });
         }
@@ -64,9 +64,9 @@ const reviewController = {
                 return res.status(400).json({ message: 'Missing information needed review' });
             }
             const savedReview = await newReview.save();
-            res.status(201).json({message : "created new review", data : savedReview});
+            res.status(201).json({message : "Create review successfully", data : savedReview});
         } catch (err) {
-            res.status(500).json({ message: 'Lỗi khi tạo đánh giá', error: err });
+            res.status(500).json({ message: 'Create review failed', error: err });
         }
     },
 
@@ -75,7 +75,7 @@ const reviewController = {
         try {
             const deletedReview = await Review.findByIdAndDelete(req.params.id);
             if (!deletedReview) {
-                return res.status(404).json({ message: 'Không tìm thấy đánh giá để xóa' });
+                return res.status(404).json({ message: 'Review not found' });
             }
             res.status(200).json({ message: 'Review deleted successfully', review: deletedReview });
         } catch (err) {
@@ -96,7 +96,7 @@ const reviewController = {
                 { new: true }
             );
             if (!updatedReview) {
-                return res.status(404).json({ message: 'No reviews found to update' });
+                return res.status(404).json({ message: 'Review not found' });
             }
             res.status(200).json({message : "update succesfully",updatedReview});
         } catch (err) {
@@ -123,7 +123,7 @@ const reviewController = {
             res.status(200).json(stats[0]);
         } catch (err) {
             console.error("DEBUG ERROR:", err);
-            res.status(500).json({ message: 'Lỗi khi lấy thống kê đánh giá', error: err.message || err });
+            res.status(500).json({ message: 'Get rating stats failed', error: err.message || err });
 }
     }
 };

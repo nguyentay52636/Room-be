@@ -36,7 +36,7 @@
 
 /**
  * @swagger
- * /api/review/getAllReviews:
+ * /api/review:
  *   get:
  *     summary: Lấy tất cả đánh giá
  *     tags: [Review]
@@ -49,51 +49,6 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Review'
- */
-
-/**
- * @swagger
- * /api/review/getReviewsByProperty/{id}:
- *   get:
- *     summary: Lấy đánh giá theo bất động sản
- *     tags: [Review]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID bất động sản
- *     responses:
- *       200:
- *         description: Danh sách đánh giá
- *       500:
- *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/review/getReviewsByUser/{id}:
- *   get:
- *     summary: Lấy đánh giá theo người dùng
- *     tags: [Review]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: ID người dùng
- *     responses:
- *       200:
- *         description: Danh sách đánh giá
- *       500:
- *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/review/createReview:
  *   post:
  *     summary: Tạo mới đánh giá
  *     tags: [Review]
@@ -125,9 +80,9 @@
 
 /**
  * @swagger
- * /api/review/deleteReview/{id}:
- *   delete:
- *     summary: Xóa đánh giá theo ID
+ * /api/review/{id}:
+ *   get:
+ *     summary: Lấy đánh giá theo ID
  *     tags: [Review]
  *     parameters:
  *       - in: path
@@ -138,14 +93,11 @@
  *         description: ID đánh giá
  *     responses:
  *       200:
- *         description: Xóa thành công
- *       404:
- *         description: Không tìm thấy
- */
-
-/**
- * @swagger
- * /api/review/updateReview/{id}:
+ *         description: Chi tiết đánh giá
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Review'
  *   put:
  *     summary: Cập nhật đánh giá
  *     tags: [Review]
@@ -172,17 +124,72 @@
  *         description: Cập nhật thành công
  *       404:
  *         description: Không tìm thấy đánh giá
+ *   delete:
+ *     summary: Xoá đánh giá theo ID
+ *     tags: [Review]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID đánh giá
+ *     responses:
+ *       200:
+ *         description: Xoá thành công
+ *       404:
+ *         description: Không tìm thấy
  */
 
 /**
  * @swagger
- * /api/review/getRatingStatsByProperty/{id}:
+ * /api/review/property/{propertyId}:
+ *   get:
+ *     summary: Lấy đánh giá theo bất động sản
+ *     tags: [Review]
+ *     parameters:
+ *       - in: path
+ *         name: propertyId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID bất động sản
+ *     responses:
+ *       200:
+ *         description: Danh sách đánh giá
+ *       500:
+ *         description: Lỗi server
+ */
+
+/**
+ * @swagger
+ * /api/review/user/{userId}:
+ *   get:
+ *     summary: Lấy đánh giá theo người dùng
+ *     tags: [Review]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID người dùng
+ *     responses:
+ *       200:
+ *         description: Danh sách đánh giá
+ *       500:
+ *         description: Lỗi server
+ */
+
+/**
+ * @swagger
+ * /api/review/property/{propertyId}/stats:
  *   get:
  *     summary: Lấy thống kê đánh giá theo bất động sản
  *     tags: [Review]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: propertyId
  *         required: true
  *         schema:
  *           type: string

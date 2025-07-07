@@ -10,7 +10,7 @@ const viewingsController = {
                 .populate('bat_dong_san_id');
             res.status(200).json(viewingsList);
         } catch (err) {
-            res.status(500).json({ message: 'Lỗi khi lấy danh sách lịch xem nhà', error: err });
+            res.status(500).json({ message: 'Get all viewings failed', error: err });
         }
     },
 
@@ -28,7 +28,7 @@ const viewingsController = {
             const savedViewing = await newViewing.save();
             res.status(201).json({message : "Created view successfully ",savedViewing});
         } catch (err) {
-            res.status(500).json({ message: 'Lỗi khi tạo lịch xem nhà', error: err });
+            res.status(500).json({ message: 'Create viewing failed', error: err });
         }
     },
     // Cập nhật lịch xem nhà
@@ -37,11 +37,11 @@ const viewingsController = {
             const { id } = req.params;
             const updatedViewing = await viewings.findByIdAndUpdate(id, req.body, { new: true });
             if (!updatedViewing) {
-                return res.status(404).json({ message: 'Không tìm thấy lịch xem nhà để cập nhật' });
+                return res.status(404).json({ message: 'Viewing not found' });
             }
             res.status(200).json(updatedViewing);
         } catch (err) {
-            res.status(500).json({ message: 'Lỗi khi cập nhật lịch xem nhà', error: err });
+            res.status(500).json({ message: 'Update viewing failed', error: err });
         }
     },
     // Xóa lịch xem nhà
@@ -50,11 +50,11 @@ const viewingsController = {
             const { id } = req.params;
             const deletedViewing = await viewings.findByIdAndDelete(id);
             if (!deletedViewing) {
-                return res.status(404).json({ message: 'Không tìm thấy lịch xem nhà để xóa' });
+                return res.status(404).json({ message: 'Viewing not found' });
             }
-            res.status(200).json({ message: 'Đã xóa lịch xem nhà thành công', viewing: deletedViewing });
+            res.status(200).json({ message: 'Delete viewing successfully', viewing: deletedViewing });
         } catch (err) {
-            res.status(500).json({ message: 'Lỗi khi xóa lịch xem nhà', error: err });
+            res.status(500).json({ message: 'Delete viewing failed', error: err });
         }
     },
 }

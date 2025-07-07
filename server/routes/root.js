@@ -1,16 +1,17 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const authRouter = require('./auth');
-const propertyRouter = require('./property')
-const reviewRouter = require('./review');
-const userRouter = require('./user');
-const viewingsRouter = require('./viewings');
-const favoriteRouter = require('./favorite')
+const authRouter = require("./auth");
+const propertyRouter = require("./property");
+const reviewRouter = require("./review");
+const userRouter = require("./user");
+const viewingsRouter = require("./viewings");
+const favoriteRouter = require("./favorite");
 
-router.use('/favorite',favoriteRouter)
-router.use('/user', userRouter);
-router.use('/auth', authRouter);
-router.use('/property',propertyRouter)
-router.use('/review', reviewRouter);
-router.use('/viewing', viewingsRouter);
+router.use("/favorite", favoriteRouter);
+router.use("/user", userRouter);
+router.use("/auth", authRouter);
+router.use("/property", propertyRouter);
+router.use("/review", reviewRouter);
+router.use("/viewing", viewingsRouter);
+
 module.exports = router;

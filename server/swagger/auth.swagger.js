@@ -41,7 +41,6 @@
  */
 
 /**
-/**
  * @swagger
  * /api/auth/register:
  *   post:
@@ -80,6 +79,7 @@
  *       400:
  *         description: Lỗi xác thực hoặc mật khẩu không khớp
  */
+
 /**
  * @swagger
  * /api/auth/login:
@@ -107,19 +107,6 @@
  *         description: Sai tài khoản hoặc mật khẩu
  *       500:
  *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/auth/refresh:
- *   post:
- *     summary: Refresh token
- *     tags: [Auth]
- *     responses:
- *       200:
- *         description: Cấp lại access token
- *       403:
- *         description: Token không hợp lệ
  */
 
 /**

@@ -17,7 +17,7 @@ const authController = {
     try{
       const existingUser = await NguoiDung.findOne({ email: req.body.email });
       if (existingUser) {
-        return res.status(400).json({ message: 'Email đã tồn tại' });
+        return res.status(400).json({ message: 'Email already exists' });
       }
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(req.body.matKhau, salt);
@@ -31,7 +31,7 @@ const authController = {
       });
       // save user database
       const user = await newUser.save();
-      res.status(201).json({message: 'Đăng ký thành công', user: user});
+      res.status(201).json({message: 'Register successfully', user: user});
     }catch(err){
       res.status(500).json(err);
     }
@@ -67,11 +67,11 @@ const authController = {
       }
       const user = await NguoiDung.findOne({tenDangNhap: req.body.tenDangNhap});
       if (!user) {
-        return res.status(404).json({ message: 'Người dùng không tồn tại' });
+        return res.status(404).json({ message: 'User not found' });
       }
       const validPassword = await bcrypt.compare(req.body.matKhau, user.matKhau);
       if (!validPassword) {
-        return res.status(400).json({ message: 'Mật khẩu không đúng' });
+        return res.status(400).json({ message: 'Password is incorrect' });
       }
       if (user && validPassword) {
         const accessToken = authController.generateAccessToken(user);

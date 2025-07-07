@@ -1,9 +1,16 @@
-const router = require('express').Router();
-const userController = require('../controllers/userController');
-const middlewareController = require('../controllers/middlewareController');
-//get all users
+const express = require("express");
+const router = express.Router();
+const userController = require("../controllers/userController");
+const middlewareController = require("../controllers/middlewareController");
 
-// router.get('/user',middlewareController.verifyToken,userController.getAllUser);
-router.get('/user', userController.getAllUser);
-router.delete('/user/:id',middlewareController.verifyTokenAndAdminAuth, userController.deleteUser);
+// GET /user
+router.get("/", userController.getAllUser);
+
+// DELETE /user/:id (admin or self)
+router.delete(
+  "/:id",
+  middlewareController.verifyTokenAndAdminAuth,
+  userController.deleteUser
+);
+
 module.exports = router;

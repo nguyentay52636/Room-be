@@ -30,7 +30,7 @@
 
 /**
  * @swagger
- * /api/favorite/createFavorite:
+ * /api/favorite:
  *   post:
  *     summary: Thêm bất động sản vào danh sách yêu thích
  *     tags: [Favorite]
@@ -59,11 +59,6 @@
  *         description: Dữ liệu thiếu hoặc đã tồn tại
  *       500:
  *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/favorite/deleteFavorite:
  *   delete:
  *     summary: Xoá bất động sản khỏi danh sách yêu thích
  *     tags: [Favorite]

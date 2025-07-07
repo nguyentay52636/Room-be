@@ -109,7 +109,21 @@
 
 /**
  * @swagger
- * /api/property/createProperty:
+ * /api/property:
+ *   get:
+ *     summary: Lấy tất cả bất động sản
+ *     tags: [Property]
+ *     responses:
+ *       200:
+ *         description: Thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Property'
+ *       500:
+ *         description: Lỗi server
  *   post:
  *     summary: Tạo mới bất động sản
  *     tags: [Property]
@@ -134,26 +148,7 @@
 
 /**
  * @swagger
- * /api/property/getAllproperty:
- *   get:
- *     summary: Lấy tất cả bất động sản
- *     tags: [Property]
- *     responses:
- *       200:
- *         description: Thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Property'
- *       500:
- *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/property/getpropertyById/{id}:
+ * /api/property/{id}:
  *   get:
  *     summary: Lấy thông tin bất động sản theo ID
  *     tags: [Property]
@@ -175,11 +170,6 @@
  *         description: Không tìm thấy
  *       500:
  *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/property/updateProperty/{id}:
  *   put:
  *     summary: Cập nhật thông tin bất động sản
  *     tags: [Property]
@@ -199,15 +189,16 @@
  *     responses:
  *       200:
  *         description: Cập nhật thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Property'
  *       400:
  *         description: Dữ liệu không hợp lệ
+ *       404:
+ *         description: Không tìm thấy
  *       500:
  *         description: Lỗi server
- */
-
-/**
- * @swagger
- * /api/property/deleteProperty/{id}:
  *   delete:
  *     summary: Xóa bất động sản
  *     tags: [Property]

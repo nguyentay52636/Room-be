@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/user/getAllUser:
+ * /api/user:
  *   get:
  *     summary: Lấy danh sách tất cả người dùng
  *     tags: [User]
@@ -26,7 +26,7 @@
 
 /**
  * @swagger
- * /api/user/deleteUser/{id}:
+ * /api/user/{id}:
  *   delete:
  *     summary: Xoá người dùng theo ID
  *     tags: [User]

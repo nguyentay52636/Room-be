@@ -1,11 +1,17 @@
-const ViewingsController = require("../controllers/viewingsController")
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
+const ViewingsController = require("../controllers/viewingsController");
 
-router.get('/getAllViewing',ViewingsController.getAllViewings)
-router.post('/createViewing',ViewingsController.createViewing)
-router.put('/updateViewing/:id',ViewingsController.updateViewing)
-router.delete('/deleteViewing/:id',ViewingsController.deleteViewing)
+// GET /viewing
+router.get("/", ViewingsController.getAllViewings);
+
+// POST /viewing
+router.post("/", ViewingsController.createViewing);
+
+// PUT /viewing/:id
+router.put("/:id", ViewingsController.updateViewing);
+
+// DELETE /viewing/:id
+router.delete("/:id", ViewingsController.deleteViewing);
+
 module.exports = router;
-
-module.exports=router
