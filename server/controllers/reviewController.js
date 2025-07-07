@@ -6,7 +6,7 @@ const reviewController = {
     try {
       const reviews = await Review.find()
         .populate("nguoiDungId")
-        .populate("bat_dong_san_id");
+        .populate("batDongSanId");
       return res
         .status(200)
         .json({ message: "get successful review list", reviews });
