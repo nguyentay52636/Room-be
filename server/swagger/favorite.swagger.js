@@ -84,3 +84,50 @@
  *       500:
  *         description: Lỗi server
  */
+
+/**
+ * @swagger
+ * /api/favorite:
+ *   get:
+ *     summary: Lấy tất cả danh sách yêu thích
+ *     tags: [Favorite]
+ *     responses:
+ *       200:
+ *         description: Lấy thành công danh sách yêu thích
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Favorite'
+ *       500:
+ *         description: Lỗi server
+ */
+
+/**
+ * @swagger
+ * /api/favorite/user/{userId}:
+ *   get:
+ *     summary: Lấy danh sách yêu thích theo người dùng
+ *     tags: [Favorite]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: ID người dùng
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Lấy thành công danh sách yêu thích của người dùng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Favorite'
+ *       404:
+ *         description: Không tìm thấy người dùng hoặc không có mục yêu thích
+ *       500:
+ *         description: Lỗi server
+ */

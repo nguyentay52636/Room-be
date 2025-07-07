@@ -4,8 +4,8 @@ const propertyController = {
   // GET property
   getAllProperty: async (req, res) => {
     try {
-      const properties = await property.find().populate("nguoi_dung_id");
-      res
+      const properties = await property.find();
+      return res
         .status(200)
         .json({ message: "Get all property succesfully ", properties });
     } catch (err) {
@@ -16,13 +16,10 @@ const propertyController = {
   getPropertyById: async (req, res) => {
     try {
       const propertyId = req.params.id;
-      const propertyData = await property
-        .findById(propertyId)
-        .populate("nguoi_dung_id");
-      if (!propertyData) {
+      const propertyData = await property.findById(propertyId);
+      if (!propertyData)
         return res.status(404).json({ message: "Property not found" });
-      }
-      res.status(200).json({ message: "Property found", propertyData });
+      return res.status(200).json({ message: "Property found", propertyData });
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }
@@ -30,13 +27,13 @@ const propertyController = {
   // POST create property
   createProperty: async (req, res) => {
     try {
-      const user = await NguoiDung.findById(req.body.nguoi_dung_id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+      const user = await NguoiDung.findById(req.body.nguoiDungId);
+      if (!user) return res.status(404).json({ message: "User not found" });
       const newProperty = new property(req.body);
       const savedProperty = await newProperty.save();
-      res.status(201).json({ message: "Property created", savedProperty });
+      return res
+        .status(201)
+        .json({ message: "Property created", savedProperty });
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }
@@ -50,10 +47,11 @@ const propertyController = {
         req.body,
         { new: true }
       );
-      if (!updatedProperty) {
+      if (!updatedProperty)
         return res.status(404).json({ message: "Property not found" });
-      }
-      res.status(200).json({ message: "update property", updatedProperty });
+      return res
+        .status(200)
+        .json({ message: "update property", updatedProperty });
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }
@@ -63,13 +61,13 @@ const propertyController = {
     try {
       const propertyId = req.params.id;
       const deletedProperty = await property.findByIdAndDelete(propertyId);
-      if (!deletedProperty) {
+      if (!deletedProperty)
         return res.status(404).json({ message: "Property not found" });
-      }
-      res.status(200).json({ message: "Property deleted successfully" });
+      return res.status(200).json({ message: "Property deleted successfully" });
     } catch (err) {
       return res.status(500).json({ message: err.message });
     }
   },
 };
+
 module.exports = propertyController;

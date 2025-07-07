@@ -3,10 +3,10 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const middlewareController = require("../controllers/middlewareController");
 
-// GET /user
+// GET /api/users
 router.get("/", userController.getAllUser);
 
-// DELETE /user/:id (admin or self)
+// DELETE /api/users/:id (admin or self)
 router.delete(
   "/:id",
   middlewareController.verifyTokenAndAdminAuth,

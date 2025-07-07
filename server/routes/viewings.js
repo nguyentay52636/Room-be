@@ -1,17 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const ViewingsController = require("../controllers/viewingsController");
+const viewingsController = require("../controllers/viewingsController");
 
-// GET /viewing
-router.get("/", ViewingsController.getAllViewings);
+// GET /api/viewings
+router.get("/", viewingsController.getAllViewings);
 
-// POST /viewing
-router.post("/", ViewingsController.createViewing);
+// GET /api/viewings/:id
+router.get("/:id", viewingsController.getViewingById);
 
-// PUT /viewing/:id
-router.put("/:id", ViewingsController.updateViewing);
+// POST /api/viewings
+router.post("/", viewingsController.createViewing);
 
-// DELETE /viewing/:id
-router.delete("/:id", ViewingsController.deleteViewing);
+// PUT /api/viewings/:id
+router.put("/:id", viewingsController.updateViewing);
+
+// DELETE /api/viewings/:id
+router.delete("/:id", viewingsController.deleteViewing);
 
 module.exports = router;

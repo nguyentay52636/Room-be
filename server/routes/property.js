@@ -1,21 +1,21 @@
 // server/routes/property.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const propertyController = require('../controllers/propertyController');
+const propertyController = require("../controllers/propertyController");
 
-// GET /property
-router.get('/', propertyController.getAllProperty);
+// GET /api/properties
+router.get("/", propertyController.getAllProperty);
 
-// GET /property/:id
-router.get('/:id', propertyController.getPropertyById);
+// GET /api/properties/:id
+router.get("/:id", propertyController.getPropertyById);
 
-// POST /property
-router.post('/', propertyController.createProperty);
+// POST /api/properties
+router.post("/", propertyController.createProperty);
 
-// PUT /property/:id
-router.put('/:id', propertyController.updateProperty);
+// PUT /api/properties/:id
+router.put("/:id", propertyController.updateProperty);
 
-// DELETE /property/:id
-router.delete('/:id', propertyController.deleteProperty);
+// DELETE /api/properties/:id
+router.delete("/:id", propertyController.deleteProperty);
 
 module.exports = router;

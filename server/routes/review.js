@@ -1,30 +1,33 @@
 const express = require("express");
 const router = express.Router();
 const reviewController = require("../controllers/reviewController");
-const { midVerification } = require("../config/jwt");
 
-// GET /review
+
+// GET /api/reviews
 router.get("/", reviewController.getAllReviews);
 
-// GET /review/:id
-router.get("/:id", reviewController.getReviewById);
+// GET /api/reviews/property/:propertyId/stats (phải đặt trước /:id để tránh conflict)
+router.get(
+  "/property/:propertyId/stats", reviewController.getRatingStatsByProperty);
 
-// GET /review/property/:propertyId
-router.get("/property/:propertyId", reviewController.getReviewsByProperty);
+// GET /api/reviews/property/:propertyId
+router.get(
+  "/property/:propertyId",reviewController.getReviewsByProperty);
 
-// GET /review/user/:userId
-router.get("/user/:userId", reviewController.getReviewsByUser);
+// GET /api/reviews/user/:userId
+router.get(
+  "/user/:userId",reviewController.getReviewsByUser);
 
-// GET /review/property/:id/stats
-router.get("/property/:id/stats", reviewController.getRatingStatsByProperty);
+// GET /api/reviews/:id
+router.get("/:id",reviewController.getReviewById);
 
-// POST /review
-router.post("/", midVerification, reviewController.createReview);
+// POST /api/reviews
+router.post("/", reviewController.createReview); 
 
-// PUT /review/:id
-router.put("/:id", midVerification, reviewController.updateReview);
+// PUT /api/reviews/:id
+router.put("/:id", reviewController.updateReview); 
 
-// DELETE /review/:id
-router.delete("/:id", midVerification, reviewController.deleteReview);
+// DELETE /api/reviews/:id
+router.delete("/:id", reviewController.deleteReview); 
 
 module.exports = router;

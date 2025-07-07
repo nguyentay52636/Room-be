@@ -91,6 +91,27 @@
 /**
  * @swagger
  * /api/viewing/{id}:
+ *   get:
+ *     summary: Lấy thông tin lịch xem nhà theo ID
+ *     tags: [Viewing]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID của lịch xem nhà
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Lấy thành công thông tin lịch xem nhà
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Viewing'
+ *       404:
+ *         description: Không tìm thấy lịch xem nhà
+ *       500:
+ *         description: Lỗi server
  *   put:
  *     summary: Cập nhật lịch xem nhà
  *     tags: [Viewing]
