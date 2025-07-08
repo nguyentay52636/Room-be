@@ -16,11 +16,17 @@ const authController = {
       return res.status(400).json({ message: "Mật khẩu xác nhận không khớp" });
     }
     try {
-      const existingUser = await NguoiDung.findOne({ email: req.body.email });
-      if (existingUser)
+      const existingUserByEmail = await NguoiDung.findOne({ email: req.body.email });
+      if (existingUserByEmail)
         return res.status(400).json({ message: "Email already exists" });
+      
+      const existingUserByUsername = await NguoiDung.findOne({ tenDangNhap: req.body.tenDangNhap });
+      if (existingUserByUsername)
+        return res.status(400).json({ message: "Username already exists" });
+      
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(req.body.matKhau, salt);
+      
       const newUser = new NguoiDung({
         ten: req.body.ten,
         email: req.body.email,
@@ -28,6 +34,7 @@ const authController = {
         matKhau: hashedPassword,
         soDienThoai: req.body.soDienThoai,
       });
+      
       const user = await newUser.save();
       return res.status(201).json({ message: "Register successfully", user });
     } catch (err) {

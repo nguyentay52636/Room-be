@@ -15,6 +15,7 @@ const nguoiDungSchema = new mongoose.Schema(
       unique: true,
       minlength: 3,
       maxlength: 50,
+      trim: true,
     },
     matKhau: { type: String, required: true, minlength: 6 },
     soDienThoai: { type: String, match: /^[0-9]{9,11}$/ },
@@ -36,4 +37,13 @@ const nguoiDungSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("NguoiDung", nguoiDungSchema);
+// Pre-save middleware to ensure tenDangNhap is never null or empty
+nguoiDungSchema.pre('save', function(next) {
+  if (!this.tenDangNhap || this.tenDangNhap.trim() === '') {
+    return next(new Error('tenDangNhap cannot be null or empty'));
+  }
+  this.tenDangNhap = this.tenDangNhap.trim();
+  next();
+});
+
+module.exports = mongoose.model("nguoiDung", nguoiDungSchema);
