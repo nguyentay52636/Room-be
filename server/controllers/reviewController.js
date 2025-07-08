@@ -1,4 +1,6 @@
 const Review = require("../models/DanhGia");
+const NguoiDung = require("../models/nguoidung");
+const BatDongSan = require("../models/BatDongSan");
 const mongoose = require("mongoose");
 const reviewController = {
   // Lấy tất cả đánh giá
@@ -13,7 +15,7 @@ const reviewController = {
     } catch (err) {
       return res
         .status(500)
-        .json({ message: "Error while getting review list", error: err });
+        .json({ message: "Error while getting review list", error: err.message });
     }
   },
 
@@ -144,13 +146,13 @@ const reviewController = {
       const stats = await Review.aggregate([
         {
           $match: {
-            batDongSanId: new mongoose.Types.ObjectId(req.params.id),
+            batDongSanId: new mongoose.Types.ObjectId(req.params.propertyId),
           },
         },
         {
           $group: {
-            _id: "$bat_dong_san_id",
-            avgRating: { $avg: "$so_sao" },
+            _id: "$batDongSanId",
+            avgRating: { $avg: "$soSao" },
             total: { $sum: 1 },
           },
         },

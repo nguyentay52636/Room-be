@@ -30,7 +30,7 @@ const BDSchema = new mongoose.Schema(
 
     nguoiDungId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "NguoiDung",
+      ref: "nguoiDung",
       required: true,
     },
 
