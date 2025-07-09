@@ -1,7 +1,8 @@
+const mongoose = require('mongoose');
 const KhachHangSchema = new mongoose.Schema({
     nguoiDungId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "NguoiDung",
+      ref: "nguoiDung",
       required: true,
       unique: true,
     },
