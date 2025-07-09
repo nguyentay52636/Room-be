@@ -4,7 +4,7 @@ const propertyController = {
   // GET property
   getAllProperty: async (req, res) => {
     try {
-      const properties = await property.find();
+      const properties = await property.find().populate("nguoiDungId");
       return res
         .status(200)
         .json({ message: "Get all property succesfully ", properties });
@@ -16,7 +16,9 @@ const propertyController = {
   getPropertyById: async (req, res) => {
     try {
       const propertyId = req.params.id;
-      const propertyData = await property.findById(propertyId);
+      const propertyData = await property
+        .findById(propertyId)
+        .populate("nguoiDungId");
       if (!propertyData)
         return res.status(404).json({ message: "Property not found" });
       return res.status(200).json({ message: "Property found", propertyData });
