@@ -10,26 +10,26 @@ const viewingsController = {
         .populate("nguoiDungId")
         .populate("batDongSanId");
       return res.status(200).json(viewingsList);
-    } catch (err) {
+    } catch (error) {
       return res
         .status(500)
-        .json({ message: "Get all viewings failed", error: err });
+        .json({ message: "Get all viewings failed", error: error });
     }
   },
   getViewingById: async (req, res) => {
     try {
       const { id } = req.params;
-      const viewing = await viewings
+      const viewingDetails = await viewings
         .findById(id)
         .populate("nguoiDungId")
         .populate("batDongSanId");
-      if (!viewing)
+      if (!viewingDetails)
         return res.status(404).json({ message: "Viewing not found" });
-      return res.status(200).json(viewing);
-    } catch (err) {
+      return res.status(200).json(viewingDetails);
+    } catch (error) {
       return res
         .status(500)
-        .json({ message: "Get viewing by id failed", error: err });
+        .json({ message: "Get viewing by id failed", error: error });
     }
   },
 
@@ -38,54 +38,61 @@ const viewingsController = {
     try {
       const { nguoiDungId, batDongSanId, thoiGian, ghiChu, trangThai } =
         req.body;
-      const newViewing = new viewings({
+      const newViewingData = new viewings({
         nguoiDungId,
         batDongSanId,
         thoiGian,
         ghiChu,
         trangThai,
       });
-      const savedViewing = await newViewing.save();
+      const createdViewing = await newViewingData.save();
       return res
         .status(201)
-        .json({ message: "Created view successfully ", savedViewing });
-    } catch (err) {
+        .json({
+          message: "Created view successfully ",
+          savedViewing: createdViewing,
+        });
+    } catch (error) {
       return res
         .status(500)
-        .json({ message: "Create viewing failed", error: err });
+        .json({ message: "Create viewing failed", error: error });
     }
   },
   // Cập nhật lịch xem nhà
   updateViewing: async (req, res) => {
     try {
       const { id } = req.params;
-      const updatedViewing = await viewings.findByIdAndUpdate(id, req.body, {
-        new: true,
-      });
-      if (!updatedViewing)
+      const updatedViewingData = await viewings.findByIdAndUpdate(
+        id,
+        req.body,
+        {
+          new: true,
+        }
+      );
+      if (!updatedViewingData)
         return res.status(404).json({ message: "Viewing not found" });
-      return res.status(200).json(updatedViewing);
-    } catch (err) {
+      return res.status(200).json(updatedViewingData);
+    } catch (error) {
       return res
         .status(500)
-        .json({ message: "Update viewing failed", error: err });
+        .json({ message: "Update viewing failed", error: error });
     }
   },
   // Xóa lịch xem nhà
   deleteViewing: async (req, res) => {
     try {
       const { id } = req.params;
-      const deletedViewing = await viewings.findByIdAndDelete(id);
-      if (!deletedViewing)
+      const deletedViewingData = await viewings.findByIdAndDelete(id);
+      if (!deletedViewingData)
         return res.status(404).json({ message: "Viewing not found" });
       return res.status(200).json({
         message: "Delete viewing successfully",
-        viewing: deletedViewing,
+        viewing: deletedViewingData,
       });
-    } catch (err) {
+    } catch (error) {
       return res
         .status(500)
-        .json({ message: "Delete viewing failed", error: err });
+        .json({ message: "Delete viewing failed", error: error });
     }
   },
 };

@@ -10,41 +10,41 @@ const favoriteController = {
           .status(400)
           .json({ message: "Missing user ID or property ID" });
       }
-      const existingFavorite = await Favorite.findOne({
+      const existingFavoriteData = await Favorite.findOne({
         nguoiDungId,
         batDongSanId,
       });
-      if (existingFavorite) {
+      if (existingFavoriteData) {
         return res.status(400).json({ message: "Already in favorites" });
       }
-      const newFavorite = new Favorite({
+      const newFavoriteData = new Favorite({
         nguoiDungId,
         batDongSanId,
       });
-      await newFavorite.save();
+      await newFavoriteData.save();
       return res
         .status(201)
-        .json({ message: "Added to favorites", favorite: newFavorite });
-    } catch (err) {
-      return res.status(500).json({ message: err.message });
+        .json({ message: "Added to favorites", favorite: newFavoriteData });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   },
   // Lấy yêu thích theo user
-  getFavoritesByUser : async (req,res) => {
+  getFavoritesByUser: async (req, res) => {
     try {
-      const {userId} = req.params;
-      const favorites = await Favorite.find({nguoiDungId: userId});
-      return res.status(200).json(favorites);
-    } catch (err) {
-      return res.status(500).json({ message: err.message });
+      const { userId } = req.params;
+      const userFavorites = await Favorite.find({ nguoiDungId: userId });
+      return res.status(200).json(userFavorites);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   },
-  getAllFavorites : async (req,res) => {
+  getAllFavorites: async (req, res) => {
     try {
-      const favorites = await Favorite.find();
-      return res.status(200).json(favorites);
-    } catch (err) {
-      return res.status(500).json({ message: err.message });
+      const allFavorites = await Favorite.find();
+      return res.status(200).json(allFavorites);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -52,16 +52,16 @@ const favoriteController = {
   deleteFavorite: async (req, res) => {
     try {
       const { nguoiDungId, batDongSanId } = req.body;
-      const deleted = await Favorite.findOneAndDelete({
+      const deletedFavoriteData = await Favorite.findOneAndDelete({
         nguoiDungId,
         batDongSanId,
       });
-      if (!deleted) {
+      if (!deletedFavoriteData) {
         return res.status(404).json({ message: "Favorite not found" });
       }
       return res.status(200).json({ message: "Removed from favorites" });
-    } catch (err) {
-      return res.status(500).json({ message: err.message });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
     }
   },
 };
