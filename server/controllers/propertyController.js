@@ -55,10 +55,7 @@ const propertyController = {
       );
       if (!updatedPropertyData)
         return res.status(404).json({ message: "Property not found" });
-      return res.status(200).json({
-        message: "update property",
-        updatedProperty: updatedPropertyData,
-      });
+      return res.status(200).json({message: "update property", updatedPropertyData,});
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
