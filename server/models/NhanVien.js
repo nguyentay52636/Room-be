@@ -19,6 +19,7 @@ const NhanVienSchema = new mongoose.Schema(
     luong: {
       type: Number,
       required: true,
+      default: 0,
     },
     hieuSuat: {
       type: Number,

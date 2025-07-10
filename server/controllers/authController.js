@@ -2,6 +2,7 @@ const User = require("../models/nguoidung");
 const RefreshToken = require("../models/RefreshToken");
 const bcrypt = require("bcrypt");
 const Customer = require("../models/KhachHang");
+const VaiTro = require("../models/vaiTro");
 const {registerValidation,loginValidation} = require("../middleware/authValidation");
 const {
   generateAccessToken,
@@ -26,16 +27,21 @@ const authController = {
         return res.status(400).json({ message: "Email already exists" });
       if (usernameExists)
         return res.status(400).json({ message: "Username already exists" });
-
+      let vaiTro = await VaiTro.findOne({ ten: "nguoi_thue" });
+      if (!vaiTro) {
+        vaiTro = await VaiTro.create({ 
+          ten: "nguoi_thue",
+          moTa: "Vai trò người thuê"
+        });
+      }
       const hashedPassword = await bcrypt.hash(req.body.matKhau, 10);
-
       const newUser = await User.create({
         ten: req.body.ten,
         email: req.body.email,
         tenDangNhap: req.body.tenDangNhap,
         matKhau: hashedPassword,
         soDienThoai: req.body.soDienThoai,
-        vaiTro: "nguoi_thue",
+        vaiTro: vaiTro._id,
       });
 
       const newCustomer = await Customer.create({
@@ -51,6 +57,7 @@ const authController = {
       return res.status(500).json({ message: "Server error", error: err });
     }
   },
+
 
   login: async (req, res) => {
     try {

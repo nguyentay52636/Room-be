@@ -12,6 +12,8 @@ const registerValidation = (data) => {
     soDienThoai: Joi.string()
       .pattern(/^[0-9]{10,11}$/)
       .required(),
+      vaiTro: Joi.string().valid("admin", "nhan_vien", "nguoi_thue", "chu_tro").default("nguoi_thue"),
+
   });
 
   return schema.validate(data);

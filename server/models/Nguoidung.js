@@ -20,9 +20,9 @@ const nguoiDungSchema = new mongoose.Schema(
     matKhau: { type: String, required: true, minlength: 6 },
     soDienThoai: { type: String, match: /^[0-9]{9,11}$/ },
     vaiTro: {
-      type: String,
-      enum: ["chu_tro", "nguoi_thue", "nhan_vien", "admin"],
-      default: "nguoi_thue",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "VaiTro",
+      required: true,
     },
     anhDaiDien: { type: String, default: "" },
     trangThai: {

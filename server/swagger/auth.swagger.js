@@ -26,7 +26,7 @@
  *           type: string
  *         vaiTro:
  *           type: string
- *           enum: [chu_tro, nguoi_thue, admin]
+ *           description: ObjectId reference to VaiTro
  *         anhDaiDien:
  *           type: string
  *         trangThai:
@@ -58,26 +58,78 @@
  *               - tenDangNhap
  *               - matKhau
  *               - xacNhanMatKhau
+ *               - soDienThoai
  *             properties:
  *               ten:
  *                 type: string
+ *                 minLength: 2
+ *                 description: Tên người dùng
  *               email:
  *                 type: string
+ *                 format: email
+ *                 description: Email người dùng (phải là unique)
  *               tenDangNhap:
  *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 50
+ *                 description: Tên đăng nhập (phải là unique)
  *               matKhau:
  *                 type: string
+ *                 minLength: 6
  *                 format: password
+ *                 description: Mật khẩu
  *               xacNhanMatKhau:
  *                 type: string
  *                 format: password
+ *                 description: Xác nhận mật khẩu (phải khớp với matKhau)
  *               soDienThoai:
  *                 type: string
+ *                 pattern: '^[0-9]{10,11}$'
+ *                 description: Số điện thoại (10-11 chữ số)
+ *               vaiTro:
+ *                 type: string
+ *                 enum: [admin, nhan_vien, nguoi_thue, chu_tro]
+ *                 default: nguoi_thue
+ *                 description: Vai trò người dùng (mặc định là nguoi_thue)
  *     responses:
- *       200:
+ *       201:
  *         description: Đăng ký thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Register successfully"
+ *                 user:
+ *                   $ref: '#/components/schemas/NguoiDung'
  *       400:
- *         description: Lỗi xác thực hoặc mật khẩu không khớp
+ *         description: Lỗi validation hoặc dữ liệu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     - "Mật khẩu xác nhận không khớp"
+ *                     - "Email already exists"
+ *                     - "Username already exists"
+ *                     - "Validation error message"
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Server error"
+ *                 error:
+ *                   type: object
  */
 
 /**
@@ -98,15 +150,65 @@
  *             properties:
  *               tenDangNhap:
  *                 type: string
+ *                 description: Tên đăng nhập
  *               matKhau:
  *                 type: string
+ *                 format: password
+ *                 description: Mật khẩu
  *     responses:
  *       200:
  *         description: Đăng nhập thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Login successful"
+ *                 user:
+ *                   $ref: '#/components/schemas/NguoiDung'
+ *                 accessToken:
+ *                   type: string
+ *                   description: JWT access token
+ *         headers:
+ *           Set-Cookie:
+ *             description: Refresh token cookie
+ *             schema:
+ *               type: string
+ *       400:
+ *         description: Lỗi validation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  *       401:
  *         description: Sai tài khoản hoặc mật khẩu
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     - "User not found"
+ *                     - "Password is incorrect"
  *       500:
  *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Server error"
+ *                 error:
+ *                   type: object
  */
 
 /**
@@ -118,4 +220,21 @@
  *     responses:
  *       200:
  *         description: Đăng xuất thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ *               example: "Logout successfully"
+ *       500:
+ *         description: Lỗi server
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Logout error"
+ *                 error:
+ *                   type: object
  */
