@@ -21,7 +21,7 @@ const nguoiDungSchema = new mongoose.Schema(
     soDienThoai: { type: String, match: /^[0-9]{9,11}$/ },
     vaiTro: {
       type: String,
-      enum: ["chu_tro", "nguoi_thue", "admin"],
+      enum: ["chu_tro", "nguoi_thue", "nhan_vien", "admin"],
       default: "nguoi_thue",
     },
     anhDaiDien: { type: String, default: "" },
@@ -38,9 +38,9 @@ const nguoiDungSchema = new mongoose.Schema(
 );
 
 // Pre-save middleware to ensure tenDangNhap is never null or empty
-nguoiDungSchema.pre('save', function(next) {
-  if (!this.tenDangNhap || this.tenDangNhap.trim() === '') {
-    return next(new Error('tenDangNhap cannot be null or empty'));
+nguoiDungSchema.pre("save", function (next) {
+  if (!this.tenDangNhap || this.tenDangNhap.trim() === "") {
+    return next(new Error("tenDangNhap cannot be null or empty"));
   }
   this.tenDangNhap = this.tenDangNhap.trim();
   next();

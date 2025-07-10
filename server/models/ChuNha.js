@@ -1,7 +1,9 @@
-const ChuNhaSchema = new mongoose.Schema({
+const mongoose = require("mongoose");
+const ChuNhaSchema = new mongoose.Schema(
+  {
     nguoiDungId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "NguoiDung",
+      ref: "nguoiDung",
       required: true,
       unique: true,
     },
@@ -13,10 +15,12 @@ const ChuNhaSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
-    danhSachBds: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "BatDongSan",
-    }],
+    danhSachBds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "BatDongSan",
+      },
+    ],
     diemTrungBinh: {
       type: Number,
       default: 0,
@@ -28,7 +32,8 @@ const ChuNhaSchema = new mongoose.Schema({
     ghiChu: {
       type: String,
     },
-  }, { timestamps: true });
-  
-  module.exports = mongoose.model("ChuNha", ChuNhaSchema);
-  
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("ChuNha", ChuNhaSchema);
