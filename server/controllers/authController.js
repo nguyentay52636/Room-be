@@ -1,6 +1,7 @@
 const User = require("../models/nguoidung");
 const RefreshToken = require("../models/RefreshToken");
 const bcrypt = require("bcrypt");
+const Customer = require("../models/KhachHang");
 const {registerValidation,loginValidation} = require("../middleware/authValidation");
 const {
   generateAccessToken,
@@ -28,17 +29,23 @@ const authController = {
 
       const hashedPassword = await bcrypt.hash(req.body.matKhau, 10);
 
-      const newUser = await new User({
+      const newUser = await User.create({
         ten: req.body.ten,
         email: req.body.email,
         tenDangNhap: req.body.tenDangNhap,
         matKhau: hashedPassword,
         soDienThoai: req.body.soDienThoai,
-      }).save();
+        vaiTro: "nguoi_thue",
+      });
+
+      const newCustomer = await Customer.create({
+        nguoiDungId: newUser._id,
+      });
 
       return res.status(201).json({
         message: "Register successfully",
         user: newUser,
+        customer: newCustomer,
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error", error: err });
@@ -94,7 +101,7 @@ const authController = {
       const newAccessToken = generateAccessToken(userData);
       const newRefreshToken = generateRefreshToken(userData);
 
-      await RefreshToken.deleteOne({ token }); // invalidate old token
+      await RefreshToken.deleteOne({ token }); 
       await RefreshToken.create({
         token: newRefreshToken,
         userId: userData.id,
