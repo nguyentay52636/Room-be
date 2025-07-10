@@ -1,71 +1,48 @@
 const User = require("../models/nguoidung");
+const RefreshToken = require("../models/RefreshToken");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const {registerValidation,loginValidation} = require("../middleware/authValidation");
 const {
-  registerValidation,
-  loginValidation,
-} = require("../middleware/authValidation");
-let refreshTokens = [];
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} = require("../utils/jwt");
 
 const authController = {
   register: async (req, res) => {
     const { error } = registerValidation(req.body);
     if (error)
       return res.status(400).json({ message: error.details[0].message });
-    if (req.body.matKhau !== req.body.xacNhanMatKhau) {
+    if (req.body.matKhau !== req.body.xacNhanMatKhau)
       return res.status(400).json({ message: "Mật khẩu xác nhận không khớp" });
-    }
-    try {
-      const existingUserByEmail = await User.findOne({ email: req.body.email });
-      if (existingUserByEmail)
-        return res.status(400).json({ message: "Email already exists" });
 
-      const existingUserByUsername = await User.findOne({
-        tenDangNhap: req.body.tenDangNhap,
-      });
-      if (existingUserByUsername)
+    try {
+      const [emailExists, usernameExists] = await Promise.all([
+        User.findOne({ email: req.body.email }),
+        User.findOne({ tenDangNhap: req.body.tenDangNhap }),
+      ]);
+      if (emailExists)
+        return res.status(400).json({ message: "Email already exists" });
+      if (usernameExists)
         return res.status(400).json({ message: "Username already exists" });
 
-      const saltRounds = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(req.body.matKhau, saltRounds);
+      const hashedPassword = await bcrypt.hash(req.body.matKhau, 10);
 
-      const newUserData = new User({
+      const newUser = await new User({
         ten: req.body.ten,
         email: req.body.email,
         tenDangNhap: req.body.tenDangNhap,
         matKhau: hashedPassword,
         soDienThoai: req.body.soDienThoai,
+      }).save();
+
+      return res.status(201).json({
+        message: "Register successfully",
+        user: newUser,
       });
-
-      const createdUser = await newUserData.save();
-      return res
-        .status(201)
-        .json({ message: "Register successfully", user: createdUser });
-    } catch (error) {
-      return res.status(500).json(error);
+    } catch (err) {
+      return res.status(500).json({ message: "Server error", error: err });
     }
-  },
-
-  generateAccessToken: (userData) => {
-    return jwt.sign(
-      {
-        id: userData.id,
-        vaiTro: userData.vaiTro,
-      },
-      process.env.JWT_ACCESS_KEY,
-      { expiresIn: "15m" }
-    );
-  },
-
-  generateRefreshToken: (userData) => {
-    return jwt.sign(
-      {
-        id: userData.id,
-        vaiTro: userData.vaiTro,
-      },
-      process.env.JWT_REFRESH_SECRET,
-      { expiresIn: "365d" }
-    );
   },
 
   login: async (req, res) => {
@@ -73,70 +50,79 @@ const authController = {
       const { error } = loginValidation(req.body);
       if (error)
         return res.status(400).json({ message: error.details[0].message });
-      const userData = await User.findOne({
-        tenDangNhap: req.body.tenDangNhap,
-      });
-      if (!userData) return res.status(404).json({ message: "User not found" });
-      const isPasswordValid = await bcrypt.compare(
-        req.body.matKhau,
-        userData.matKhau
-      );
-      if (!isPasswordValid)
+
+      const user = await User.findOne({ tenDangNhap: req.body.tenDangNhap });
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const isValid = await bcrypt.compare(req.body.matKhau, user.matKhau);
+      if (!isValid)
         return res.status(400).json({ message: "Password is incorrect" });
-      const accessToken = authController.generateAccessToken(userData);
-      const refreshToken = authController.generateRefreshToken(userData);
-      refreshTokens.push(refreshToken);
+
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
+
+      await RefreshToken.create({ token: refreshToken, userId: user._id });
+
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        path: "/",
         secure: false,
         sameSite: "strict",
       });
-      const { matKhau, ...userDetailsWithoutPassword } = userData._doc;
-      return res
-        .status(200)
-        .json({
-          message: "login successfully",
-          ...userDetailsWithoutPassword,
-          accessToken,
-        });
-    } catch (error) {
-      return res.status(500).json(error);
+
+      const { matKhau, ...userData } = user._doc;
+      return res.status(200).json({
+        message: "Login successful",
+        user: userData,
+        accessToken,
+      });
+    } catch (err) {
+      return res.status(500).json({ message: "Server error", error: err });
     }
   },
 
   requestRefreshToken: async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) return res.status(401).json("you're not authenticated");
-    if (!refreshTokens.includes(refreshToken)) {
-      return res.status(403).json("refresh token is not valid");
+    try {
+      const token = req.cookies.refreshToken;
+      if (!token)
+        return res.status(401).json({ message: "Not authenticated" });
+
+      const storedToken = await RefreshToken.findOne({ token });
+      if (!storedToken)
+        return res.status(403).json({ message: "Invalid refresh token" });
+
+      const userData = verifyRefreshToken(token);
+      const newAccessToken = generateAccessToken(userData);
+      const newRefreshToken = generateRefreshToken(userData);
+
+      await RefreshToken.deleteOne({ token }); // invalidate old token
+      await RefreshToken.create({
+        token: newRefreshToken,
+        userId: userData.id,
+      });
+
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+
+      return res.status(200).json({ accessToken: newAccessToken });
+    } catch (err) {
+      return res.status(403).json({ message: "Invalid token", error: err });
     }
-    jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET,
-      (error, userData) => {
-        if (error) {
-          console.log(error);
-          return res.status(403).json("refresh token is not valid");
-        }
-        refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
-        const newAccessToken = authController.generateAccessToken(userData);
-        const newRefreshToken = authController.generateRefreshToken(userData);
-        refreshTokens.push(newRefreshToken);
-        res.cookie("refreshToken", newRefreshToken, {
-          httpOnly: true,
-          path: "/",
-          secure: false,
-          sameSite: "strict",
-        });
-        return res.status(200).json({ accessToken: newAccessToken });
-      }
-    );
   },
 
   userLogout: async (req, res) => {
-    res.clearCookie("refreshToken");
-    return res.status(200).json("Logout successfully");
+    try {
+      const token = req.cookies.refreshToken;
+      if (!token) return res.status(200).json("Already logged out");
+
+      await RefreshToken.deleteOne({ token });
+      res.clearCookie("refreshToken");
+      return res.status(200).json("Logout successfully");
+    } catch (err) {
+      return res.status(500).json({ message: "Logout error", error: err });
+    }
   },
 };
 
