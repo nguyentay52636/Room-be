@@ -11,10 +11,14 @@ const NhanVienSchema = new mongoose.Schema(
     phongBan: {
       type: String,
       required: true,
+      enum: ["sale","ho_tro_khach_hang","chuyen_vien_sale","truong_phong_ban"],
+      default: "sale"
     },
     chucVu: {
       type: String,
       required: true,
+      enum: ["nhan_vien","quan_ly","giam_doc","truong_phong"],
+      default: "nhan_vien"
     },
     luong: {
       type: Number,
@@ -28,6 +32,7 @@ const NhanVienSchema = new mongoose.Schema(
     ngayVaoLam: {
       type: Date,
       required: true,
+      default: Date.now,
     },
     trangThai: {
       type: String,
