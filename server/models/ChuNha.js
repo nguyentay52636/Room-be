@@ -36,4 +36,4 @@ const ChuNhaSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ChuNha", ChuNhaSchema);
+module.exports = mongoose.models.ChuNha || mongoose.model("ChuNha", ChuNhaSchema);

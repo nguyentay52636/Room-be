@@ -49,5 +49,5 @@ const KhachHangSchema = new mongoose.Schema({
     },
   }, { timestamps: true });
   
-  module.exports = mongoose.model("KhachHang", KhachHangSchema);
+  module.exports = mongoose.models.KhachHang || mongoose.model("KhachHang", KhachHangSchema);
   

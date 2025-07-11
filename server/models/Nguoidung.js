@@ -24,7 +24,10 @@ const nguoiDungSchema = new mongoose.Schema(
       ref: "VaiTro",
       required: true,
     },
-    anhDaiDien: { type: String, default: "" },
+    anhDaiDien: { 
+      type: String, 
+      required: true,
+     },
     trangThai: {
       type: String,
       enum: ["hoat_dong", "khoa"],
@@ -46,4 +49,4 @@ nguoiDungSchema.pre("save", function (next) {
   next();
 });
 
-module.exports = mongoose.model("nguoiDung", nguoiDungSchema);
+module.exports = mongoose.models.nguoiDung || mongoose.model("nguoiDung", nguoiDungSchema);

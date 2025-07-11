@@ -9,6 +9,7 @@ const favoriteRouter = require("./favorite");
 const employeeRouter = require("./employee");
 const ownerRouter = require("./owner");
 const roleRouter = require("./role");
+const customerRouter = require("./customer");
 
 router.use("/owner",ownerRouter)
 router.use("/favorite", favoriteRouter);
@@ -19,6 +20,6 @@ router.use("/review", reviewRouter);
 router.use("/viewing", viewingsRouter);
 router.use("/employee", employeeRouter);
 router.use("/role", roleRouter);
-
+router.use("/customer", customerRouter);
 
 module.exports = router;

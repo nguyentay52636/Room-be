@@ -13,15 +13,19 @@
  *       type: object
  *       required:
  *         - nguoiDungId
- *         - diaChi
+ *         - vaiTro
  *       properties:
  *         _id:
  *           type: string
  *         nguoiDungId:
  *           type: string
  *           description: User reference (ObjectId)
+ *         vaiTro:
+ *           type: string
+ *           description: Role reference (ObjectId)
  *         diaChi:
  *           type: string
+ *           default: ""
  *         loai:
  *           type: string
  *           default: "standard"
@@ -91,34 +95,48 @@
  *             type: object
  *             required:
  *               - nguoiDungId
- *               - diaChi
  *             properties:
  *               nguoiDungId:
  *                 type: string
+ *                 description: User ID (required)
+ *               vaiTro:
+ *                 type: string
+ *                 description: Role ID
  *               diaChi:
  *                 type: string
+ *                 description: Customer address
  *               loai:
  *                 type: string
+ *                 description: Customer type
  *               tongChiTieu:
  *                 type: number
+ *                 description: Total spending
  *               soBdsDangThue:
  *                 type: number
+ *                 description: Number of properties currently rented
  *               soBdsYeuThich:
  *                 type: number
+ *                 description: Number of favorite properties
  *               soDanhGia:
  *                 type: number
+ *                 description: Number of reviews
  *               diemTrungBinh:
  *                 type: number
+ *                 description: Average rating
  *               bdsDangThueHienTai:
  *                 type: string
+ *                 description: Currently rented property
  *               ngayKetThucHopDong:
  *                 type: string
  *                 format: date
+ *                 description: Contract end date
  *               lanHoatDongGanNhat:
  *                 type: string
  *                 format: date
+ *                 description: Last activity date
  *               ghiChu:
  *                 type: string
+ *                 description: Notes
  *     responses:
  *       200:
  *         description: Customer created successfully
@@ -132,7 +150,7 @@
  *                 customer:
  *                   $ref: '#/components/schemas/Customer'
  *       400:
- *         description: Missing required fields or Nguoi dung not found
+ *         description: Missing required fields, Nguoi dung not found, or Customer already exists for this user
  *       500:
  *         description: Create customer failed
  */
@@ -185,30 +203,45 @@
  *             properties:
  *               nguoiDungId:
  *                 type: string
+ *                 description: User ID
+ *               vaiTro:
+ *                 type: string
+ *                 description: Role ID
  *               diaChi:
  *                 type: string
+ *                 description: Customer address
  *               loai:
  *                 type: string
+ *                 description: Customer type
  *               tongChiTieu:
  *                 type: number
+ *                 description: Total spending
  *               soBdsDangThue:
  *                 type: number
+ *                 description: Number of properties currently rented
  *               soBdsYeuThich:
  *                 type: number
+ *                 description: Number of favorite properties
  *               soDanhGia:
  *                 type: number
+ *                 description: Number of reviews
  *               diemTrungBinh:
  *                 type: number
+ *                 description: Average rating
  *               bdsDangThueHienTai:
  *                 type: string
+ *                 description: Currently rented property
  *               ngayKetThucHopDong:
  *                 type: string
  *                 format: date
+ *                 description: Contract end date
  *               lanHoatDongGanNhat:
  *                 type: string
  *                 format: date
+ *                 description: Last activity date
  *               ghiChu:
  *                 type: string
+ *                 description: Notes
  *     responses:
  *       200:
  *         description: Update customer successfully

@@ -19,4 +19,4 @@ const VaiTroSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("VaiTro", VaiTroSchema);
+module.exports = mongoose.models.VaiTro || mongoose.model("VaiTro", VaiTroSchema);
