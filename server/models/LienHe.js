@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
 const LienHeSchema = new mongoose.Schema({
-  nguoi_dung_id: { type: mongoose.Schema.Types.ObjectId, ref: 'NguoiDung' },
-  bat_dong_san_id: { type: mongoose.Schema.Types.ObjectId, ref: 'BatDongSan' },
-  tin_nhan: String,
-  trang_thai: { type: String, enum: ['chua_tra_loi', 'da_tra_loi'], default: 'chua_tra_loi' },
-  ngay_gui: { type: Date, default: Date.now }
+  nguoiDungId: { type: mongoose.Schema.Types.ObjectId, ref: 'NguoiDung' },
+  batDongSanId: { type: mongoose.Schema.Types.ObjectId, ref: 'BatDongSan' },
+  ngayTraLoi: { type: Date, default: null },
+  tinNhan: { type: String, required: true },
+  trangThai: { type: String, enum: ['chua_tra_loi', 'da_tra_loi'], default: 'chua_tra_loi' },
+  ngayGui: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('LienHe', LienHeSchema);

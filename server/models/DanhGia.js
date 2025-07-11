@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const DanhGiaSchema = new mongoose.Schema({
-  nguoi_dung_id: { type: mongoose.Schema.Types.ObjectId, ref: 'NguoiDung' },
-  bat_dong_san_id: { type: mongoose.Schema.Types.ObjectId, ref: 'BatDongSan' },
-  so_sao: { type: Number, min: 1, max: 5 },
-  binh_luan: String
+  nguoiDungId: { type: mongoose.Schema.Types.ObjectId, ref: 'nguoiDung' },
+  batDongSanId: { type: mongoose.Schema.Types.ObjectId, ref: 'BatDongSan' },
+  soSao: { type: Number, min: 1, max: 5 , required: true },
+  binhLuan: String
 }, { timestamps: true });
 
 module.exports = mongoose.model('DanhGia', DanhGiaSchema);

@@ -1,58 +1,143 @@
-const NguoiDung = require('../models/nguoidung');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const User = require("../models/nguoidung");
+const RefreshToken = require("../models/RefreshToken");
+const bcrypt = require("bcrypt");
+const Customer = require("../models/KhachHang");
+const VaiTro = require("../models/vaiTro");
+const {registerValidation,loginValidation} = require("../middleware/authValidation");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} = require("../utils/jwt");
 
 const authController = {
-  register : async (req, res) => {
-    try{
-      const existingUser = await NguoiDung.findOne({ email: req.body.email });
-      if (existingUser) {
-        return res.status(400).json({ message: 'Email đã tồn tại' });
+  register: async (req, res) => {
+    const { error } = registerValidation(req.body);
+    if (error)
+      return res.status(400).json({ message: error.details[0].message });
+    if (req.body.matKhau !== req.body.xacNhanMatKhau)
+      return res.status(400).json({ message: "Mật khẩu xác nhận không khớp" });
+
+    try {
+      const [emailExists, usernameExists] = await Promise.all([
+        User.findOne({ email: req.body.email }),
+        User.findOne({ tenDangNhap: req.body.tenDangNhap }),
+      ]);
+      if (emailExists)
+        return res.status(400).json({ message: "Email already exists" });
+      if (usernameExists)
+        return res.status(400).json({ message: "Username already exists" });
+      let vaiTro = await VaiTro.findOne({ ten: "nguoi_thue" });
+      if (!vaiTro) {
+        vaiTro = await VaiTro.create({ 
+          ten: "nguoi_thue",
+          moTa: "Vai trò người thuê"
+        });
       }
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(req.body.mat_khau, salt);
-      // create new user
-      const newUser = new NguoiDung({
+      const hashedPassword = await bcrypt.hash(req.body.matKhau, 10);
+      const newUser = await User.create({
         ten: req.body.ten,
         email: req.body.email,
-        mat_khau: hashedPassword,
-        so_dien_thoai: req.body.so_dien_thoai,
-        vai_tro: req.body.vai_tro || 'nguoi_thue',
-        anh_dai_dien: req.body.anh_dai_dien || '',
-        trang_thai: req.body.trang_thai || 'hoat_dong'
+        tenDangNhap: req.body.tenDangNhap,
+        matKhau: hashedPassword,
+        soDienThoai: req.body.soDienThoai,
+        vaiTro: vaiTro._id,
       });
-      // save user database
-      const user = await newUser.save();
-      res.status(200).json(user);
-    }catch(err){
-      res.status(500).json(err);
+
+      const newCustomer = await Customer.create({
+        nguoiDungId: newUser._id,
+      });
+
+      return res.status(201).json({
+        message: "Register successfully",
+        user: newUser,
+        customer: newCustomer,
+      });
+    } catch (err) {
+      return res.status(500).json({ message: "Server error", error: err });
     }
   },
-  login : async (req, res) => {
+
+
+  login: async (req, res) => {
     try {
-      const user = await NguoiDung.findOne({ten: req.body.ten});
-      if (!user) {
-        return res.status(404).json({ message: 'Người dùng không tồn tại' });
-      }
-      const validPassword = await bcrypt.compare(req.body.mat_khau, user.mat_khau);
-      if (!validPassword) {
-        return res.status(400).json({ message: 'Mật khẩu không đúng' });
-      }
-      if (user && validPassword) {
-        const accessToken = jwt.sign(
-        {
-          id: user.id,
-          vai_tro: user.vai_tro
-        },
-        process.env.JWT_SECRET,
-        {expiresIn: '30s'},
-      );
-        const { mat_khau, ...otherDetails } = user._doc; 
-        res.status(200).json({...otherDetails,accessToken});
-      }
-    }catch(err) {
-      res.status(500).json(err);
+      const { error } = loginValidation(req.body);
+      if (error)
+        return res.status(400).json({ message: error.details[0].message });
+
+      const user = await User.findOne({ tenDangNhap: req.body.tenDangNhap });
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const isValid = await bcrypt.compare(req.body.matKhau, user.matKhau);
+      if (!isValid)
+        return res.status(400).json({ message: "Password is incorrect" });
+
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
+
+      await RefreshToken.create({ token: refreshToken, userId: user._id });
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+
+      const { matKhau, ...userData } = user._doc;
+      return res.status(200).json({
+        message: "Login successful",
+        user: userData,
+        accessToken,
+      });
+    } catch (err) {
+      return res.status(500).json({ message: "Server error", error: err });
     }
-  }
+  },
+
+  requestRefreshToken: async (req, res) => {
+    try {
+      const token = req.cookies.refreshToken;
+      if (!token)
+        return res.status(401).json({ message: "Not authenticated" });
+
+      const storedToken = await RefreshToken.findOne({ token });
+      if (!storedToken)
+        return res.status(403).json({ message: "Invalid refresh token" });
+
+      const userData = verifyRefreshToken(token);
+      const newAccessToken = generateAccessToken(userData);
+      const newRefreshToken = generateRefreshToken(userData);
+
+      await RefreshToken.deleteOne({ token }); 
+      await RefreshToken.create({
+        token: newRefreshToken,
+        userId: userData.id,
+      });
+
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+      });
+
+      return res.status(200).json({ accessToken: newAccessToken });
+    } catch (err) {
+      return res.status(403).json({ message: "Invalid token", error: err });
+    }
+  },
+
+  userLogout: async (req, res) => {
+    try {
+      const token = req.cookies.refreshToken;
+      if (!token) return res.status(200).json("Already logged out");
+
+      await RefreshToken.deleteOne({ token });
+      res.clearCookie("refreshToken");
+      return res.status(200).json("Logout successfully");
+    } catch (err) {
+      return res.status(500).json({ message: "Logout error", error: err });
+    }
+  },
 };
+
 module.exports = authController;
