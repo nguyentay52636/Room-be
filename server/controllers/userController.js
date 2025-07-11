@@ -45,13 +45,15 @@ const userController = {
   updateUser: async (req, res) => {
     try {
       const { id } = req.params;
-      const { ten, email, tenDangNhap,matKhau, soDienThoai, vaiTro, anhDaiDien,trangThai } = req.body;
+      const { ten, email, tenDangNhap ,matKhau, soDienThoai, vaiTro, anhDaiDien,trangThai } = req.body;
       
       const userUpdate = { 
         ten,
         email,
         tenDangNhap,
+        matKhau,
         soDienThoai,
+        vaiTro,
         anhDaiDien,
         trangThai,
       };
