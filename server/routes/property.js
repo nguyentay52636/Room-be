@@ -5,6 +5,8 @@ const propertyController = require("../controllers/propertyController");
 
 // GET /api/properties
 router.get("/", propertyController.getAllProperty);
+// GET /api/properties/:district
+router.get("/:district", propertyController.getPropertiesByDistrict);
 
 // GET /api/properties/:id
 router.get("/:id", propertyController.getPropertyById);
