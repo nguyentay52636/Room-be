@@ -65,7 +65,7 @@ const authController = {
       if (error)
         return res.status(400).json({ message: error.details[0].message });
 
-      const user = await User.findOne({ tenDangNhap: req.body.tenDangNhap });
+      const user = await User.findOne({ tenDangNhap: req.body.tenDangNhap }).populate('vaiTro');
       if (!user) return res.status(404).json({ message: "User not found" });
 
       const isValid = await bcrypt.compare(req.body.matKhau, user.matKhau);
