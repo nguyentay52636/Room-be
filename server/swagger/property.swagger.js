@@ -217,3 +217,34 @@
  *       500:
  *         description: Lỗi server
  */
+
+/**
+ * @swagger
+ * /api/property/{district}:
+ *   get:
+ *     summary: Lấy danh sách bất động sản theo quận
+ *     tags: [Property]
+ *     parameters:
+ *       - in: path
+ *         name: district
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Tên quận/huyện cần lọc
+ *     responses:
+ *       200:
+ *         description: Danh sách bất động sản theo quận
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 properties:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Property'
+ *       500:
+ *         description: Lỗi server
+ */

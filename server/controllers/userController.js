@@ -4,7 +4,7 @@ const { registerValidation } = require("../middleware/authValidation");
 const Customer = require("../models/KhachHang");
 const VaiTro = require("../models/vaiTro");
 const ChuTNha = require("../models/chuNha");
-const NhanVien = require("../models/nhanVien");
+const NhanVien = require("../models/NhanVien");
 const userController = {
   getAllUser: async (req, res) => {
     try {
@@ -112,6 +112,7 @@ const userController = {
           moTa: `Vai trò ${req.body.vaiTro}`
         });
       }
+      
       const newUser = await User.create({
         ten: req.body.ten,
         email: req.body.email,

@@ -13,8 +13,6 @@ const registerValidation = (data) => {
       .pattern(/^[0-9]{10,11}$/)
       .required(),
     vaiTro: Joi.string().valid("admin", "nhan_vien", "nguoi_thue", "chu_tro").default("nguoi_thue"),
-    anhDaiDien: Joi.string().required(),
-    trangThai: Joi.string().valid("hoat_dong", "khoa").default("hoat_dong"),
   });
 
   return schema.validate(data);

@@ -55,7 +55,9 @@ const propertyController = {
       );
       if (!updatedPropertyData)
         return res.status(404).json({ message: "Property not found" });
-      return res.status(200).json({message: "update property", updatedPropertyData,});
+      return res
+        .status(200)
+        .json({ message: "update property", updatedPropertyData });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -68,6 +70,22 @@ const propertyController = {
       if (!deletedPropertyData)
         return res.status(404).json({ message: "Property not found" });
       return res.status(200).json({ message: "Property deleted successfully" });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  getPropertiesByDistrict: async (req, res) => {
+    try {
+      const { district } = req.params;
+      const propertiesList = await Property.find({
+        quanHuyen: { $regex: new RegExp(district, "i") },
+      }).populate("nguoiDungId");
+      if (!propertiesList || propertiesList.length === 0)
+        return res.status(404).json({ message: "Property not found" });
+      return res.status(200).json({
+        message: "Get property by district successfully",
+        properties: propertiesList,
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
