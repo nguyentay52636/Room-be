@@ -26,8 +26,8 @@ const nguoiDungSchema = new mongoose.Schema(
     },
     anhDaiDien: { 
       type: String, 
-      required: true,
-     },
+      default: ""
+    },
     trangThai: {
       type: String,
       enum: ["hoat_dong", "khoa"],

@@ -3,6 +3,7 @@ const RefreshToken = require("../models/RefreshToken");
 const bcrypt = require("bcrypt");
 const Customer = require("../models/KhachHang");
 const VaiTro = require("../models/vaiTro");
+const ChuNha = require("../models/chuNha");
 const {registerValidation,loginValidation} = require("../middleware/authValidation");
 const {
   generateAccessToken,
@@ -27,14 +28,18 @@ const authController = {
         return res.status(400).json({ message: "Email already exists" });
       if (usernameExists)
         return res.status(400).json({ message: "Username already exists" });
-      let vaiTro = await VaiTro.findOne({ ten: "nguoi_thue" });
+
+      // Find or create role
+      let vaiTro = await VaiTro.findOne({ ten: req.body.vaiTro });
       if (!vaiTro) {
         vaiTro = await VaiTro.create({ 
-          ten: "nguoi_thue",
-          moTa: "Vai trò người thuê"
+          ten: req.body.vaiTro, 
+          moTa: `Vai trò ${req.body.vaiTro}`
         });
       }
+      
       const hashedPassword = await bcrypt.hash(req.body.matKhau, 10);
+      
       const newUser = await User.create({
         ten: req.body.ten,
         email: req.body.email,
@@ -44,14 +49,26 @@ const authController = {
         vaiTro: vaiTro._id,
       });
 
-      const newCustomer = await Customer.create({
-        nguoiDungId: newUser._id,
-      });
-
+      // Create role-specific records after user creation
+      let customer = null;
+      let chuTro = null;
+      
+      if(req.body.vaiTro === "nguoi_thue"){
+        customer = await Customer.create({
+          nguoiDungId: newUser._id,
+        }); 
+      }
+      
+      if(req.body.vaiTro === "chu_tro"){
+        chuTro = await ChuNha.create({
+          nguoiDungId: newUser._id,
+        }); 
+      }
       return res.status(201).json({
         message: "Register successfully",
         user: newUser,
-        customer: newCustomer,
+        customer: customer,
+        chuTro: chuTro,
       });
     } catch (err) {
       return res.status(500).json({ message: "Server error", error: err });

@@ -112,6 +112,7 @@ const userController = {
           moTa: `Vai trò ${req.body.vaiTro}`
         });
       }
+      
       const newUser = await User.create({
         ten: req.body.ten,
         email: req.body.email,
