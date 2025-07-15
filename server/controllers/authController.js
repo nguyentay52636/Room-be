@@ -3,8 +3,13 @@ const RefreshToken = require("../models/RefreshToken");
 const bcrypt = require("bcrypt");
 const Customer = require("../models/KhachHang");
 const VaiTro = require("../models/vaiTro");
-const ChuNha = require("../models/chuNha");
-const {registerValidation,loginValidation} = require("../middleware/authValidation");
+const ChuNha = require("../models/ChuNha");
+const sendMail = require("../utils/sendMail");
+const crypto = require("crypto");
+const {
+  registerValidation,
+  loginValidation,
+} = require("../middleware/authValidation");
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -32,14 +37,14 @@ const authController = {
       // Find or create role
       let vaiTro = await VaiTro.findOne({ ten: req.body.vaiTro });
       if (!vaiTro) {
-        vaiTro = await VaiTro.create({ 
-          ten: req.body.vaiTro, 
-          moTa: `Vai trò ${req.body.vaiTro}`
+        vaiTro = await VaiTro.create({
+          ten: req.body.vaiTro,
+          moTa: `Vai trò ${req.body.vaiTro}`,
         });
       }
-      
+
       const hashedPassword = await bcrypt.hash(req.body.matKhau, 10);
-      
+
       const newUser = await User.create({
         ten: req.body.ten,
         email: req.body.email,
@@ -52,17 +57,17 @@ const authController = {
       // Create role-specific records after user creation
       let customer = null;
       let chuTro = null;
-      
-      if(req.body.vaiTro === "nguoi_thue"){
+
+      if (req.body.vaiTro === "nguoi_thue") {
         customer = await Customer.create({
           nguoiDungId: newUser._id,
-        }); 
+        });
       }
-      
-      if(req.body.vaiTro === "chu_tro"){
+
+      if (req.body.vaiTro === "chu_tro") {
         chuTro = await ChuNha.create({
           nguoiDungId: newUser._id,
-        }); 
+        });
       }
       return res.status(201).json({
         message: "Register successfully",
@@ -75,14 +80,15 @@ const authController = {
     }
   },
 
-
   login: async (req, res) => {
     try {
       const { error } = loginValidation(req.body);
       if (error)
         return res.status(400).json({ message: error.details[0].message });
 
-      const user = await User.findOne({ tenDangNhap: req.body.tenDangNhap }).populate('vaiTro');
+      const user = await User.findOne({
+        tenDangNhap: req.body.tenDangNhap,
+      }).populate("vaiTro");
       if (!user) return res.status(404).json({ message: "User not found" });
 
       const isValid = await bcrypt.compare(req.body.matKhau, user.matKhau);
@@ -114,8 +120,7 @@ const authController = {
   requestRefreshToken: async (req, res) => {
     try {
       const token = req.cookies.refreshToken;
-      if (!token)
-        return res.status(401).json({ message: "Not authenticated" });
+      if (!token) return res.status(401).json({ message: "Not authenticated" });
 
       const storedToken = await RefreshToken.findOne({ token });
       if (!storedToken)
@@ -125,7 +130,7 @@ const authController = {
       const newAccessToken = generateAccessToken(userData);
       const newRefreshToken = generateRefreshToken(userData);
 
-      await RefreshToken.deleteOne({ token }); 
+      await RefreshToken.deleteOne({ token });
       await RefreshToken.create({
         token: newRefreshToken,
         userId: userData.id,
@@ -147,13 +152,44 @@ const authController = {
     try {
       const token = req.cookies.refreshToken;
       if (!token) return res.status(200).json("Already logged out");
-
       await RefreshToken.deleteOne({ token });
       res.clearCookie("refreshToken");
       return res.status(200).json("Logout successfully");
     } catch (err) {
       return res.status(500).json({ message: "Logout error", error: err });
     }
+  },
+  forgotPassword: async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    // tao token
+    const resetToken = user.createPasswordChangedToken();
+    await user.save();
+    const rs = await sendMail({ email, resetToken });
+    return res.status(200).json({
+      success: true,
+      rs,
+    });
+  },
+  resetPassword: async (req, res) => {
+    const { newPassword, token } = req.body;
+    if (!newPassword || !token) throw new Error('missing input')
+    const resetPasswordToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({ 
+      resetPasswordToken, 
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+    if (!user) throw new Error('invalid reset token');
+    user.matKhau = await bcrypt.hash(newPassword, 10);
+    user.resetPasswordToken = undefined;
+    user.passwordChangedAt = Date.now();
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    return res.status(200).json({ 
+      success: true,
+      mes: 'Password reset successful'
+    })
   },
 };
 

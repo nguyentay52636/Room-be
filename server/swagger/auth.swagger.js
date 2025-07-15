@@ -238,3 +238,96 @@
  *                 error:
  *                   type: object
  */
+
+/**
+ * @swagger
+ * /api/auth/forgotPassword:
+ *   post:
+ *     summary: Gửi email đặt lại mật khẩu
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email đã đăng ký tài khoản
+ *     responses:
+ *       200:
+ *         description: Đã gửi email đặt lại mật khẩu (nếu email tồn tại)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 rs:
+ *                   type: object
+ *       404:
+ *         description: Không tìm thấy người dùng với email này
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ */
+
+/**
+ * @swagger
+ * /api/auth/resetPassword:
+ *   post:
+ *     summary: Đặt lại mật khẩu mới bằng token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - newPassword
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Token đặt lại mật khẩu nhận qua email
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
+ *                 description: Mật khẩu mới
+ *     responses:
+ *       200:
+ *         description: Đặt lại mật khẩu thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 mes:
+ *                   type: string
+ *                   example: "Password reset successful"
+ *       400:
+ *         description: Token không hợp lệ hoặc đã hết hạn
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "invalid reset token"
+ */

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const crypto = require("crypto");
 const nguoiDungSchema = new mongoose.Schema(
   {
     ten: { type: String, required: true },
@@ -24,15 +24,18 @@ const nguoiDungSchema = new mongoose.Schema(
       ref: "VaiTro",
       required: true,
     },
-    anhDaiDien: { 
-      type: String, 
-      default: ""
+    anhDaiDien: {
+      type: String,
+      default: "",
     },
     trangThai: {
       type: String,
       enum: ["hoat_dong", "khoa"],
       default: "hoat_dong",
     },
+    passwordChangedAt: { type: Date },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
   },
   {
     timestamps: true,
@@ -48,5 +51,14 @@ nguoiDungSchema.pre("save", function (next) {
   this.tenDangNhap = this.tenDangNhap.trim();
   next();
 });
+nguoiDungSchema.methods = {
+  createPasswordChangedToken: function(){
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.resetPasswordExpires = Date.now() + 15*60*1000;
+  return resetToken;
+  }
+}
 
-module.exports = mongoose.models.nguoiDung || mongoose.model("nguoiDung", nguoiDungSchema);
+module.exports =
+  mongoose.models.nguoiDung || mongoose.model("nguoiDung", nguoiDungSchema);
