@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const TinNhanSchema = new mongoose.Schema({
-  nguoiGuiId: { type: mongoose.Schema.Types.ObjectId, ref: 'NguoiDung' },
-  nguoiNhanId: { type: mongoose.Schema.Types.ObjectId, ref: 'NguoiDung' },
+  nguoiGuiId: { type: mongoose.Schema.Types.ObjectId, ref: 'nguoiDung' },
+  nguoiNhanId: { type: mongoose.Schema.Types.ObjectId, ref: 'nguoiDung' },
   noiDung: { type: String , required: true, maxlength: 500 },
   hinhAnh: { type: String }, 
   daDoc: { type: Boolean, default: false },

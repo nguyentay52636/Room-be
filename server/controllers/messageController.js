@@ -10,7 +10,10 @@ const getMessages = async (req, res) => {
                 { nguoiGuiId: sender, nguoiNhanId: receiver },
                 { nguoiGuiId: receiver, nguoiNhanId: sender }
             ]
-        }).sort({ createdAt: 1 });
+        })
+        .populate('nguoiGuiId')
+        .populate('nguoiNhanId')
+        .sort({ createdAt: 1 });
 
         res.json(messages);
     } catch (error) {
@@ -19,7 +22,9 @@ const getMessages = async (req, res) => {
 };
 const getAllMessages = async (req, res) => { 
 try { 
-    const messages = await TinNhan.find();
+    const messages = await TinNhan.find()
+        .populate('nguoiGuiId')
+        .populate('nguoiNhanId');
     res.status(200).json({
         message: "Get all messages successfully",
         messages: messages
@@ -59,11 +64,13 @@ const createMessageHandler = async (req, res) => {
         };
 
         const newMessage = await TinNhan.create(messageData);
+        
+        // Populate user information for the response
+        const populatedMessage = await TinNhan.findById(newMessage._id)
+            .populate('nguoiGuiId')
+            .populate('nguoiNhanId');
 
-        res.status(200).json({
-            message: "Create message successfully",
-            newMessage: newMessage
-        });
+        res.status(201).json(populatedMessage);
     } catch (error) {
         res.status(500).json({ message: 'Lỗi tạo tin nhắn', error });
     }
@@ -86,7 +93,9 @@ const updateMessageHandler = async (req, res) => {
             id,
             { noiDung: noiDungMoi, trangThai: 'edited' },
             { new: true }
-        );
+        )
+        .populate('nguoiGuiId')
+        .populate('nguoiNhanId');
 
         if (!updated) {
             return res.status(404).json({ 
@@ -115,7 +124,9 @@ const deleteMessageHandler = async (req, res) => {
             id,
             { noiDung: '[deleted]', trangThai: 'deleted' },
             { new: true }
-        );
+        )
+        .populate('nguoiGuiId')
+        .populate('nguoiNhanId');
 
         if (!deleted) {
             return res.status(404).json({ 
@@ -138,7 +149,10 @@ const deleteMessageHandler = async (req, res) => {
 // Helper functions for socket usage
 const createMessage = async (data) => {
     const newMsg = await TinNhan.create(data);
-    return newMsg;
+    const populatedMsg = await TinNhan.findById(newMsg._id)
+        .populate('nguoiGuiId')
+        .populate('nguoiNhanId');
+    return populatedMsg;
 };
 
 
@@ -147,7 +161,9 @@ const updateMessage = async (id, noiDungMoi) => {
         id,
         { noiDung: noiDungMoi, trangThai: 'edited' },
         { new: true }
-    );
+    )
+    .populate('nguoiGuiId')
+    .populate('nguoiNhanId');
     return updated;
 };
 
@@ -157,7 +173,9 @@ const deleteMessage = async (id) => {
         id,
         { noiDung: '[deleted]', trangThai: 'deleted' },
         { new: true }
-    );
+    )
+    .populate('nguoiGuiId')
+    .populate('nguoiNhanId');
     return deleted;
 };
 

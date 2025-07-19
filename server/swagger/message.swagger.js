@@ -9,6 +9,30 @@
  * @swagger
  * components:
  *   schemas:
+ *     UserInfo:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: ID của người dùng
+ *         ten:
+ *           type: string
+ *           description: Tên người dùng
+ *         email:
+ *           type: string
+ *           description: Email người dùng
+ *         tenDangNhap:
+ *           type: string
+ *           description: Tên đăng nhập
+ *         anhDaiDien:
+ *           type: string
+ *           description: URL ảnh đại diện
+ *         soDienThoai:
+ *           type: string
+ *           description: Số điện thoại
+ *         trangThai:
+ *           type: string
+ *           description: Trạng thái người dùng
  *     Message:
  *       type: object
  *       required:
@@ -21,13 +45,11 @@
  *           description: ID của tin nhắn
  *           example: ""
  *         nguoiGuiId:
- *           type: string
- *           description: ID người gửi tin nhắn (reference to NguoiDung)
- *           example: ""
+ *           $ref: '#/components/schemas/UserInfo'
+ *           description: Thông tin người gửi tin nhắn
  *         nguoiNhanId:
- *           type: string
- *           description: ID người nhận tin nhắn (reference to NguoiDung)
- *           example: ""
+ *           $ref: '#/components/schemas/UserInfo'
+ *           description: Thông tin người nhận tin nhắn
  *         noiDung:
  *           type: string
  *           maxLength: 500
@@ -122,7 +144,7 @@
  *         example: ""
  *     responses:
  *       200:
- *         description: Danh sách tin nhắn giữa hai người dùng (sắp xếp theo thời gian tạo)
+ *         description: Danh sách tin nhắn giữa hai người dùng (sắp xếp theo thời gian tạo) với thông tin đầy đủ của người gửi và người nhận
  *         content:
  *           application/json:
  *             schema:
@@ -131,23 +153,28 @@
  *                 $ref: '#/components/schemas/Message'
  *             examples:
  *               success:
- *                 summary: Ví dụ danh sách tin nhắn
+ *                 summary: Ví dụ danh sách tin nhắn với thông tin người dùng đầy đủ
  *                 value:
  *                   - _id: ""
- *                     nguoiGuiId: ""
- *                     nguoiNhanId: ""
+ *                     nguoiGuiId:
+ *                       _id: ""
+ *                       ten: ""
+ *                       email: ""
+ *                       tenDangNhap: ""
+ *                       anhDaiDien: ""
+ *                       soDienThoai: ""
+ *                       trangThai: ""
+ *                     nguoiNhanId:
+ *                       _id: ""
+ *                       ten: ""
+ *                       email: ""
+ *                       tenDangNhap: ""
+ *                       anhDaiDien: ""
+ *                       soDienThoai: ""
+ *                       trangThai: ""
  *                     noiDung: ""
  *                     hinhAnh: ""
  *                     daDoc: false
- *                     trangThai: "sent"
- *                     createdAt: ""
- *                     updatedAt: ""
- *                   - _id: ""
- *                     nguoiGuiId: ""
- *                     nguoiNhanId: ""
- *                     noiDung: ""
- *                     hinhAnh: ""
- *                     daDoc: true
  *                     trangThai: "sent"
  *                     createdAt: ""
  *                     updatedAt: ""
@@ -173,7 +200,7 @@
  *     tags: [Message]
  *     responses:
  *       200:
- *         description: Lấy tất cả tin nhắn thành công
+ *         description: Lấy tất cả tin nhắn thành công với thông tin đầy đủ của người gửi và người nhận
  *         content:
  *           application/json:
  *             schema:
@@ -234,15 +261,29 @@
  *                 trangThai: "sent"
  *     responses:
  *       201:
- *         description: Tin nhắn được tạo thành công
+ *         description: Tin nhắn được tạo thành công với thông tin đầy đủ của người gửi và người nhận
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Message'
  *             example:
  *               _id: ""
- *               nguoiGuiId: ""
- *               nguoiNhanId: ""
+ *               nguoiGuiId:
+ *                 _id: ""
+ *                 ten: ""
+ *                 email: ""
+ *                 tenDangNhap: ""
+ *                 anhDaiDien: ""
+ *                 soDienThoai: ""
+ *                 trangThai: ""
+ *               nguoiNhanId:
+ *                 _id: ""
+ *                 ten: ""
+ *                 email: ""
+ *                 tenDangNhap: ""
+ *                 anhDaiDien: ""
+ *                 soDienThoai: ""
+ *                 trangThai: ""
  *               noiDung: ""
  *               hinhAnh: ""
  *               daDoc: false
@@ -305,15 +346,29 @@
  *             noiDungMoi: ""
  *     responses:
  *       200:
- *         description: Tin nhắn được cập nhật thành công
+ *         description: Tin nhắn được cập nhật thành công với thông tin đầy đủ của người gửi và người nhận
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Message'
  *             example:
  *               _id: ""
- *               nguoiGuiId: ""
- *               nguoiNhanId: ""
+ *               nguoiGuiId:
+ *                 _id: ""
+ *                 ten: ""
+ *                 email: ""
+ *                 tenDangNhap: ""
+ *                 anhDaiDien: ""
+ *                 soDienThoai: ""
+ *                 trangThai: ""
+ *               nguoiNhanId:
+ *                 _id: ""
+ *                 ten: ""
+ *                 email: ""
+ *                 tenDangNhap: ""
+ *                 anhDaiDien: ""
+ *                 soDienThoai: ""
+ *                 trangThai: ""
  *               noiDung: ""
  *               hinhAnh: ""
  *               daDoc: false
@@ -373,15 +428,29 @@
  *         example: ""
  *     responses:
  *       200:
- *         description: Tin nhắn được xóa thành công (soft delete - nội dung thay đổi thành '[deleted]')
+ *         description: Tin nhắn được xóa thành công (soft delete - nội dung thay đổi thành '[deleted]') với thông tin đầy đủ của người gửi và người nhận
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Message'
  *             example:
  *               _id: ""
- *               nguoiGuiId: ""
- *               nguoiNhanId: ""
+ *               nguoiGuiId:
+ *                 _id: ""
+ *                 ten: ""
+ *                 email: ""
+ *                 tenDangNhap: ""
+ *                 anhDaiDien: ""
+ *                 soDienThoai: ""
+ *                 trangThai: ""
+ *               nguoiNhanId:
+ *                 _id: ""
+ *                 ten: ""
+ *                 email: ""
+ *                 tenDangNhap: ""
+ *                 anhDaiDien: ""
+ *                 soDienThoai: ""
+ *                 trangThai: ""
  *               noiDung: "[deleted]"
  *               hinhAnh: ""
  *               daDoc: false
