@@ -33,39 +33,63 @@
  *         trangThai:
  *           type: string
  *           description: Trạng thái người dùng
+ *     RoomInfo:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: ID của phòng chat
+ *         tenPhong:
+ *           type: string
+ *           description: Tên phòng chat
+ *         loaiPhong:
+ *           type: string
+ *           enum: [private, group]
+ *           description: Loại phòng chat
+ *         thanhVien:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Danh sách ID thành viên
+ *         nguoiTao:
+ *           type: string
+ *           description: ID người tạo phòng
+ *         anhDaiDien:
+ *           type: string
+ *           description: URL ảnh đại diện phòng
  *     Message:
  *       type: object
  *       required:
+ *         - roomId
  *         - nguoiGuiId
- *         - nguoiNhanId
  *         - noiDung
  *       properties:
  *         _id:
  *           type: string
  *           description: ID của tin nhắn
- *           example: ""
+ *           example: "507f1f77bcf86cd799439011"
+ *         roomId:
+ *           $ref: '#/components/schemas/RoomInfo'
+ *           description: Thông tin phòng chat
  *         nguoiGuiId:
  *           $ref: '#/components/schemas/UserInfo'
  *           description: Thông tin người gửi tin nhắn
- *         nguoiNhanId:
- *           $ref: '#/components/schemas/UserInfo'
- *           description: Thông tin người nhận tin nhắn
  *         noiDung:
  *           type: string
  *           maxLength: 500
  *           description: Nội dung tin nhắn
- *           example: ""
+ *           example: "Xin chào mọi người!"
  *         hinhAnh:
  *           type: string
  *           description: URL hình ảnh đính kèm (tùy chọn)
- *           example: ""
+ *           example: "https://example.com/image.jpg"
  *         daDoc:
  *           type: boolean
  *           default: false
  *           description: Trạng thái đã đọc tin nhắn
  *         trangThai:
  *           type: string
- *           enum: [sent, delivered, read, edited, deleted]
+ *           enum: [sent, edited, deleted]
  *           default: sent
  *           description: Trạng thái tin nhắn
  *         createdAt:
@@ -79,34 +103,34 @@
  *     MessageCreate:
  *       type: object
  *       required:
+ *         - roomId
  *         - nguoiGuiId
- *         - nguoiNhanId
  *         - noiDung
  *       properties:
+ *         roomId:
+ *           type: string
+ *           description: ID phòng chat
+ *           example: "507f1f77bcf86cd799439011"
  *         nguoiGuiId:
  *           type: string
  *           description: ID người gửi tin nhắn
- *           example: ""
- *         nguoiNhanId:
- *           type: string
- *           description: ID người nhận tin nhắn
- *           example: ""
+ *           example: "507f1f77bcf86cd799439012"
  *         noiDung:
  *           type: string
  *           maxLength: 500
  *           description: Nội dung tin nhắn
- *           example: ""
+ *           example: "Xin chào mọi người!"
  *         hinhAnh:
  *           type: string
  *           description: URL hình ảnh đính kèm (tùy chọn)
- *           example: ""
+ *           example: "https://example.com/image.jpg"
  *         daDoc:
  *           type: boolean
  *           default: false
  *           description: Trạng thái đã đọc tin nhắn
  *         trangThai:
  *           type: string
- *           enum: [sent, delivered, read, edited, deleted]
+ *           enum: [sent, edited, deleted]
  *           default: sent
  *           description: Trạng thái tin nhắn
  *     MessageUpdate:
@@ -118,33 +142,26 @@
  *           type: string
  *           maxLength: 500
  *           description: Nội dung tin nhắn mới để cập nhật
- *           example: ""
+ *           example: "Nội dung đã được chỉnh sửa"
  */
 
 /**
  * @swagger
- * /api/message/{sender}/{receiver}:
+ * /api/message/room/{roomId}:
  *   get:
- *     summary: Lấy tất cả tin nhắn giữa hai người dùng
+ *     summary: Lấy tất cả tin nhắn trong phòng chat
  *     tags: [Message]
  *     parameters:
  *       - in: path
- *         name: sender
+ *         name: roomId
  *         required: true
  *         schema:
  *           type: string
- *         description: ID của người gửi
- *         example: ""
- *       - in: path
- *         name: receiver
- *         required: true
- *         schema:
- *           type: string
- *         description: ID của người nhận
- *         example: ""
+ *         description: ID của phòng chat
+ *         example: "507f1f77bcf86cd799439011"
  *     responses:
  *       200:
- *         description: Danh sách tin nhắn giữa hai người dùng (sắp xếp theo thời gian tạo) với thông tin đầy đủ của người gửi và người nhận
+ *         description: Danh sách tin nhắn trong phòng chat (sắp xếp theo thời gian tạo) với thông tin đầy đủ của người gửi và phòng chat
  *         content:
  *           application/json:
  *             schema:
@@ -153,31 +170,30 @@
  *                 $ref: '#/components/schemas/Message'
  *             examples:
  *               success:
- *                 summary: Ví dụ danh sách tin nhắn với thông tin người dùng đầy đủ
+ *                 summary: Ví dụ danh sách tin nhắn với thông tin đầy đủ
  *                 value:
- *                   - _id: ""
+ *                   - _id: "507f1f77bcf86cd799439011"
+ *                     roomId:
+ *                       _id: "507f1f77bcf86cd799439011"
+ *                       tenPhong: "Nhóm chat ABC"
+ *                       loaiPhong: "group"
+ *                       thanhVien: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+ *                       nguoiTao: "507f1f77bcf86cd799439012"
+ *                       anhDaiDien: "https://example.com/room.jpg"
  *                     nguoiGuiId:
- *                       _id: ""
- *                       ten: ""
- *                       email: ""
- *                       tenDangNhap: ""
- *                       anhDaiDien: ""
- *                       soDienThoai: ""
- *                       trangThai: ""
- *                     nguoiNhanId:
- *                       _id: ""
- *                       ten: ""
- *                       email: ""
- *                       tenDangNhap: ""
- *                       anhDaiDien: ""
- *                       soDienThoai: ""
- *                       trangThai: ""
- *                     noiDung: ""
+ *                       _id: "507f1f77bcf86cd799439012"
+ *                       ten: "Nguyễn Văn A"
+ *                       email: "nguyenvana@example.com"
+ *                       tenDangNhap: "nguyenvana"
+ *                       anhDaiDien: "https://example.com/avatar.jpg"
+ *                       soDienThoai: "0123456789"
+ *                       trangThai: "online"
+ *                     noiDung: "Xin chào mọi người!"
  *                     hinhAnh: ""
  *                     daDoc: false
  *                     trangThai: "sent"
- *                     createdAt: ""
- *                     updatedAt: ""
+ *                     createdAt: "2023-12-07T10:30:00.000Z"
+ *                     updatedAt: "2023-12-07T10:30:00.000Z"
  *       500:
  *         description: Lỗi lấy tin nhắn
  *         content:
@@ -187,7 +203,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "Lỗi lấy tin nhắn"
  *                 error:
  *                   type: object
  */
@@ -200,7 +216,7 @@
  *     tags: [Message]
  *     responses:
  *       200:
- *         description: Lấy tất cả tin nhắn thành công với thông tin đầy đủ của người gửi và người nhận
+ *         description: Lấy tất cả tin nhắn thành công với thông tin đầy đủ của người gửi và phòng chat
  *         content:
  *           application/json:
  *             schema:
@@ -208,7 +224,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "Get all messages successfully"
  *                 messages:
  *                   type: array
  *                   items:
@@ -222,7 +238,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "Lỗi lấy tất cả tin nhắn"
  *                 error:
  *                   type: object
  *   post:
@@ -238,58 +254,57 @@
  *             text_message:
  *               summary: Tin nhắn text đầy đủ
  *               value:
- *                 nguoiGuiId: ""
- *                 nguoiNhanId: ""
- *                 noiDung: ""
+ *                 roomId: "507f1f77bcf86cd799439011"
+ *                 nguoiGuiId: "507f1f77bcf86cd799439012"
+ *                 noiDung: "Xin chào mọi người!"
  *                 hinhAnh: ""
  *                 daDoc: false
  *                 trangThai: "sent"
  *             simple_message:
  *               summary: Tin nhắn chỉ có các field bắt buộc
  *               value:
- *                 nguoiGuiId: ""
- *                 nguoiNhanId: ""
- *                 noiDung: ""
+ *                 roomId: "507f1f77bcf86cd799439011"
+ *                 nguoiGuiId: "507f1f77bcf86cd799439012"
+ *                 noiDung: "Tin nhắn đơn giản"
  *             image_message:
  *               summary: Tin nhắn có hình ảnh
  *               value:
- *                 nguoiGuiId: ""
- *                 nguoiNhanId: ""
- *                 noiDung: ""
- *                 hinhAnh: ""
+ *                 roomId: "507f1f77bcf86cd799439011"
+ *                 nguoiGuiId: "507f1f77bcf86cd799439012"
+ *                 noiDung: "Chia sẻ hình ảnh"
+ *                 hinhAnh: "https://example.com/image.jpg"
  *                 daDoc: false
  *                 trangThai: "sent"
  *     responses:
  *       201:
- *         description: Tin nhắn được tạo thành công với thông tin đầy đủ của người gửi và người nhận
+ *         description: Tin nhắn được tạo thành công với thông tin đầy đủ của người gửi và phòng chat
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Message'
  *             example:
- *               _id: ""
+ *               _id: "507f1f77bcf86cd799439011"
+ *               roomId:
+ *                 _id: "507f1f77bcf86cd799439011"
+ *                 tenPhong: "Nhóm chat ABC"
+ *                 loaiPhong: "group"
+ *                 thanhVien: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+ *                 nguoiTao: "507f1f77bcf86cd799439012"
+ *                 anhDaiDien: "https://example.com/room.jpg"
  *               nguoiGuiId:
- *                 _id: ""
- *                 ten: ""
- *                 email: ""
- *                 tenDangNhap: ""
- *                 anhDaiDien: ""
- *                 soDienThoai: ""
- *                 trangThai: ""
- *               nguoiNhanId:
- *                 _id: ""
- *                 ten: ""
- *                 email: ""
- *                 tenDangNhap: ""
- *                 anhDaiDien: ""
- *                 soDienThoai: ""
- *                 trangThai: ""
- *               noiDung: ""
+ *                 _id: "507f1f77bcf86cd799439012"
+ *                 ten: "Nguyễn Văn A"
+ *                 email: "nguyenvana@example.com"
+ *                 tenDangNhap: "nguyenvana"
+ *                 anhDaiDien: "https://example.com/avatar.jpg"
+ *                 soDienThoai: "0123456789"
+ *                 trangThai: "online"
+ *               noiDung: "Xin chào mọi người!"
  *               hinhAnh: ""
  *               daDoc: false
  *               trangThai: "sent"
- *               createdAt: ""
- *               updatedAt: ""
+ *               createdAt: "2023-12-07T10:30:00.000Z"
+ *               updatedAt: "2023-12-07T10:30:00.000Z"
  *       400:
  *         description: Dữ liệu không hợp lệ
  *         content:
@@ -303,11 +318,11 @@
  *               missing_required:
  *                 summary: Thiếu thông tin bắt buộc
  *                 value:
- *                   message: ""
+ *                   message: "Thiếu thông tin bắt buộc (roomId, nguoiGuiId, noiDung)"
  *               invalid_status:
  *                 summary: Trạng thái không hợp lệ
  *                 value:
- *                   message: ""
+ *                   message: "Trạng thái không hợp lệ. Các giá trị cho phép: sent, edited, deleted"
  *       500:
  *         description: Lỗi tạo tin nhắn
  *         content:
@@ -317,7 +332,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "Lỗi tạo tin nhắn"
  *                 error:
  *                   type: object
  */
@@ -335,7 +350,7 @@
  *         schema:
  *           type: string
  *         description: ID của tin nhắn cần cập nhật
- *         example: ""
+ *         example: "507f1f77bcf86cd799439011"
  *     requestBody:
  *       required: true
  *       content:
@@ -343,38 +358,37 @@
  *           schema:
  *             $ref: '#/components/schemas/MessageUpdate'
  *           example:
- *             noiDungMoi: ""
+ *             noiDungMoi: "Nội dung đã được chỉnh sửa"
  *     responses:
  *       200:
- *         description: Tin nhắn được cập nhật thành công với thông tin đầy đủ của người gửi và người nhận
+ *         description: Tin nhắn được cập nhật thành công với thông tin đầy đủ của người gửi và phòng chat
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Message'
  *             example:
- *               _id: ""
+ *               _id: "507f1f77bcf86cd799439011"
+ *               roomId:
+ *                 _id: "507f1f77bcf86cd799439011"
+ *                 tenPhong: "Nhóm chat ABC"
+ *                 loaiPhong: "group"
+ *                 thanhVien: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+ *                 nguoiTao: "507f1f77bcf86cd799439012"
+ *                 anhDaiDien: "https://example.com/room.jpg"
  *               nguoiGuiId:
- *                 _id: ""
- *                 ten: ""
- *                 email: ""
- *                 tenDangNhap: ""
- *                 anhDaiDien: ""
- *                 soDienThoai: ""
- *                 trangThai: ""
- *               nguoiNhanId:
- *                 _id: ""
- *                 ten: ""
- *                 email: ""
- *                 tenDangNhap: ""
- *                 anhDaiDien: ""
- *                 soDienThoai: ""
- *                 trangThai: ""
- *               noiDung: ""
+ *                 _id: "507f1f77bcf86cd799439012"
+ *                 ten: "Nguyễn Văn A"
+ *                 email: "nguyenvana@example.com"
+ *                 tenDangNhap: "nguyenvana"
+ *                 anhDaiDien: "https://example.com/avatar.jpg"
+ *                 soDienThoai: "0123456789"
+ *                 trangThai: "online"
+ *               noiDung: "Nội dung đã được chỉnh sửa"
  *               hinhAnh: ""
  *               daDoc: false
  *               trangThai: "edited"
- *               createdAt: ""
- *               updatedAt: ""
+ *               createdAt: "2023-12-07T10:30:00.000Z"
+ *               updatedAt: "2023-12-07T10:35:00.000Z"
  *       400:
  *         description: ID tin nhắn không hợp lệ hoặc dữ liệu không hợp lệ
  *         content:
@@ -388,11 +402,11 @@
  *               invalid_id:
  *                 summary: ID không hợp lệ
  *                 value:
- *                   message: ""
+ *                   message: "ID tin nhắn không hợp lệ"
  *               missing_content:
  *                 summary: Thiếu nội dung
  *                 value:
- *                   message: ""
+ *                   message: "Thiếu nội dung tin nhắn mới"
  *       404:
  *         description: Không tìm thấy tin nhắn
  *         content:
@@ -402,7 +416,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "Không tìm thấy tin nhắn"
  *       500:
  *         description: Lỗi cập nhật tin nhắn
  *         content:
@@ -412,7 +426,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "Lỗi cập nhật tin nhắn"
  *                 error:
  *                   type: object
  *   delete:
@@ -425,38 +439,37 @@
  *         schema:
  *           type: string
  *         description: ID của tin nhắn cần xóa
- *         example: ""
+ *         example: "507f1f77bcf86cd799439011"
  *     responses:
  *       200:
- *         description: Tin nhắn được xóa thành công (soft delete - nội dung thay đổi thành '[deleted]') với thông tin đầy đủ của người gửi và người nhận
+ *         description: Tin nhắn được xóa thành công (soft delete - nội dung thay đổi thành '[deleted]') với thông tin đầy đủ của người gửi và phòng chat
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Message'
  *             example:
- *               _id: ""
+ *               _id: "507f1f77bcf86cd799439011"
+ *               roomId:
+ *                 _id: "507f1f77bcf86cd799439011"
+ *                 tenPhong: "Nhóm chat ABC"
+ *                 loaiPhong: "group"
+ *                 thanhVien: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+ *                 nguoiTao: "507f1f77bcf86cd799439012"
+ *                 anhDaiDien: "https://example.com/room.jpg"
  *               nguoiGuiId:
- *                 _id: ""
- *                 ten: ""
- *                 email: ""
- *                 tenDangNhap: ""
- *                 anhDaiDien: ""
- *                 soDienThoai: ""
- *                 trangThai: ""
- *               nguoiNhanId:
- *                 _id: ""
- *                 ten: ""
- *                 email: ""
- *                 tenDangNhap: ""
- *                 anhDaiDien: ""
- *                 soDienThoai: ""
- *                 trangThai: ""
+ *                 _id: "507f1f77bcf86cd799439012"
+ *                 ten: "Nguyễn Văn A"
+ *                 email: "nguyenvana@example.com"
+ *                 tenDangNhap: "nguyenvana"
+ *                 anhDaiDien: "https://example.com/avatar.jpg"
+ *                 soDienThoai: "0123456789"
+ *                 trangThai: "online"
  *               noiDung: "[deleted]"
  *               hinhAnh: ""
  *               daDoc: false
  *               trangThai: "deleted"
- *               createdAt: ""
- *               updatedAt: ""
+ *               createdAt: "2023-12-07T10:30:00.000Z"
+ *               updatedAt: "2023-12-07T10:40:00.000Z"
  *       400:
  *         description: ID tin nhắn không hợp lệ
  *         content:
@@ -466,7 +479,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "ID tin nhắn không hợp lệ"
  *                 error:
  *                   type: object
  *       404:
@@ -478,7 +491,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "Không tìm thấy tin nhắn"
  *       500:
  *         description: Lỗi xóa tin nhắn
  *         content:
@@ -488,7 +501,87 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: ""
+ *                   example: "Lỗi xóa tin nhắn"
+ *                 error:
+ *                   type: object
+ */
+
+/**
+ * @swagger
+ * /api/message/{id}/read:
+ *   put:
+ *     summary: Đánh dấu tin nhắn đã đọc
+ *     tags: [Message]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của tin nhắn cần đánh dấu đã đọc
+ *         example: "507f1f77bcf86cd799439011"
+ *     responses:
+ *       200:
+ *         description: Tin nhắn được đánh dấu đã đọc thành công với thông tin đầy đủ của người gửi và phòng chat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Message'
+ *             example:
+ *               _id: "507f1f77bcf86cd799439011"
+ *               roomId:
+ *                 _id: "507f1f77bcf86cd799439011"
+ *                 tenPhong: "Nhóm chat ABC"
+ *                 loaiPhong: "group"
+ *                 thanhVien: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+ *                 nguoiTao: "507f1f77bcf86cd799439012"
+ *                 anhDaiDien: "https://example.com/room.jpg"
+ *               nguoiGuiId:
+ *                 _id: "507f1f77bcf86cd799439012"
+ *                 ten: "Nguyễn Văn A"
+ *                 email: "nguyenvana@example.com"
+ *                 tenDangNhap: "nguyenvana"
+ *                 anhDaiDien: "https://example.com/avatar.jpg"
+ *                 soDienThoai: "0123456789"
+ *                 trangThai: "online"
+ *               noiDung: "Xin chào mọi người!"
+ *               hinhAnh: ""
+ *               daDoc: true
+ *               trangThai: "sent"
+ *               createdAt: "2023-12-07T10:30:00.000Z"
+ *               updatedAt: "2023-12-07T10:32:00.000Z"
+ *       400:
+ *         description: ID tin nhắn không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "ID tin nhắn không hợp lệ"
+ *                 error:
+ *                   type: object
+ *       404:
+ *         description: Không tìm thấy tin nhắn
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Không tìm thấy tin nhắn"
+ *       500:
+ *         description: Lỗi đánh dấu tin nhắn đã đọc
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi đánh dấu tin nhắn đã đọc"
  *                 error:
  *                   type: object
  */
