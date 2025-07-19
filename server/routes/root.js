@@ -11,6 +11,7 @@ const ownerRouter = require("./owner");
 const roleRouter = require("./role");
 const customerRouter = require("./customer");
 const messageRouter = require("./message");
+const roomRouter = require("./room");
 router.use("/owner",ownerRouter)
 router.use("/favorite", favoriteRouter);
 router.use("/user", userRouter);
@@ -22,5 +23,6 @@ router.use("/employee", employeeRouter);
 router.use("/role", roleRouter);
 router.use("/customer", customerRouter);
 router.use("/message", messageRouter);
+router.use("/room", roomRouter);
 
 module.exports = router;
