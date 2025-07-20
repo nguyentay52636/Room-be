@@ -26,7 +26,7 @@ const setupSocket = (server) => {
             const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
             
             if (!token) {
-                console.log('❌ No token provided for socket connection');
+                // console.log('❌ No token provided for socket connection');
                 return next(new Error('Authentication required'));
             }
 
@@ -35,17 +35,17 @@ const setupSocket = (server) => {
             
             jwt.verify(cleanToken, process.env.JWT_ACCESS_KEY, (err, decoded) => {
                 if (err) {
-                    console.log('❌ Invalid token for socket connection:', err.message);
+                    // console.log('❌ Invalid token for socket connection:', err.message);
                     return next(new Error('Invalid token'));
                 }
                 
                 socket.userId = decoded.id;
                 socket.userRole = decoded.vaiTro;
-                console.log(`✅ Socket authenticated for user ${decoded.id}`);
+                // console.log(`✅ Socket authenticated for user ${decoded.id}`);
                 next();
             });
         } catch (error) {
-            console.log('❌ Socket authentication error:', error.message);
+            // console.log('❌ Socket authentication error:', error.message);
             next(new Error('Authentication failed'));
         }
     });
@@ -54,16 +54,16 @@ const setupSocket = (server) => {
     const userRooms = new Map();
 
     io.on('connection', (socket) => {
-        console.log('🟢 Socket Connected:', socket.id, 'User:', socket.userId);
+        // console.log('🟢 Socket Connected:', socket.id, 'User:', socket.userId);
         userRooms.set(socket.id, new Set());
 
         // Enhanced room joining with validation and permission checking
         socket.on('joinRoom', async (roomId) => {
             try {
-                console.log(`🔄 User ${socket.userId} attempting to join room: ${roomId}`);
+                // console.log(`🔄 User ${socket.userId} attempting to join room: ${roomId}`);
                 
                 if (!roomId) {
-                    console.log(`❌ Missing roomId for socket ${socket.id}`);
+                    // console.log(`❌ Missing roomId for socket ${socket.id}`);
                     socket.emit('error', { message: 'Room ID is required' });
                     return;
                 }
@@ -71,7 +71,7 @@ const setupSocket = (server) => {
                 // Validate if room exists
                 const room = await PhongChat.findById(roomId);
                 if (!room) {
-                    console.log(`❌ Room ${roomId} not found`);
+                    // console.log(`❌ Room ${roomId} not found`);
                     socket.emit('error', { message: 'Room not found' });
                     return;
                 }
@@ -79,7 +79,7 @@ const setupSocket = (server) => {
                 // Check if user is a member of the room
                 const isMember = room.thanhVien.some(memberId => memberId.toString() === socket.userId);
                 if (!isMember) {
-                    console.log(`❌ User ${socket.userId} not authorized for room ${roomId}`);
+                    // console.log(`❌ User ${socket.userId} not authorized for room ${roomId}`);
                     socket.emit('error', { message: 'Không có quyền truy cập phòng này' });
                     return;
                 }
@@ -88,13 +88,13 @@ const setupSocket = (server) => {
                 const currentRooms = userRooms.get(socket.id) || new Set();
                 for (const prevRoom of currentRooms) {
                     socket.leave(prevRoom);
-                    console.log(`👋 User ${socket.userId} left previous room ${prevRoom}`);
+                    // console.log(`👋 User ${socket.userId} left previous room ${prevRoom}`);
                 }
 
                 // Join the new room
                 socket.join(roomId);
                 userRooms.set(socket.id, new Set([roomId]));
-                console.log(`✅ User ${socket.userId} joined room ${roomId}`);
+                // console.log(`✅ User ${socket.userId} joined room ${roomId}`);
                 
                 // Notify user they successfully joined
                 socket.emit('joinedRoom', { 
@@ -114,10 +114,10 @@ const setupSocket = (server) => {
 
                 // Send current room info
                 const roomInfo = await io.in(roomId).fetchSockets();
-                console.log(`📊 Room ${roomId} now has ${roomInfo.length} connected users`);
+                // console.log(`📊 Room ${roomId} now has ${roomInfo.length} connected users`);
 
             } catch (error) {
-                console.error('❌ Error joining room:', error);
+                // console.error('❌ Error joining room:', error);
                 socket.emit('error', { message: 'Failed to join room', error: error.message });
             }
         });
@@ -125,15 +125,15 @@ const setupSocket = (server) => {
         // Enhanced message creation with authentication and authorization
         socket.on('message:create', async (data) => {
             try {
-                console.log('📤 Creating message:', { 
-                    roomId: data.roomId, 
-                    from: socket.userId,
-                    content: data.noiDung?.substring(0, 50) + '...',
-                    socketId: socket.id
-                });
+                // console.log('📤 Creating message:', { 
+                //     roomId: data.roomId, 
+                //     from: socket.userId,
+                //     content: data.noiDung?.substring(0, 50) + '...',
+                //     socketId: socket.id
+                // });
                 
                 if (!data.roomId || !data.noiDung) {
-                    console.log('❌ Missing required message data:', data);
+                    // console.log('❌ Missing required message data:', data);
                     socket.emit('error', { message: 'Missing required message data' });
                     return;
                 }
@@ -141,7 +141,7 @@ const setupSocket = (server) => {
                 // Verify user is in the room
                 const rooms = Array.from(socket.rooms);
                 if (!rooms.includes(data.roomId)) {
-                    console.log(`❌ Socket ${socket.id} not in room ${data.roomId}`);
+                    // console.log(`❌ Socket ${socket.id} not in room ${data.roomId}`);
                     socket.emit('error', { message: 'You must join the room first' });
                     return;
                 }
@@ -150,18 +150,18 @@ const setupSocket = (server) => {
                 data.nguoiGuiId = socket.userId;
 
                 const message = await createMessage(data);
-                console.log('✅ Message created successfully:', message._id);
+                // console.log('✅ Message created successfully:', message._id);
                 
                 // Broadcast to ALL users in the room (including sender for confirmation)
                 io.to(data.roomId).emit('message:new', message);
-                console.log(`📡 Message broadcasted to room ${data.roomId}`);
+                // console.log(`📡 Message broadcasted to room ${data.roomId}`);
                 
                 // Log room participants for debugging
                 const roomSockets = await io.in(data.roomId).fetchSockets();
-                console.log(`📊 Message sent to ${roomSockets.length} connected users in room ${data.roomId}`);
+                // console.log(`📊 Message sent to ${roomSockets.length} connected users in room ${data.roomId}`);
                 
             } catch (error) {
-                console.error('❌ Error creating message:', error);
+                // console.error('❌ Error creating message:', error);
                 socket.emit('error', { message: 'Failed to create message', error: error.message });
             }
         });
@@ -169,7 +169,7 @@ const setupSocket = (server) => {
         // Enhanced message update with ownership verification
         socket.on('message:update', async ({ id, noiDungMoi, roomId }) => {
             try {
-                console.log('✏️ Updating message:', { id, roomId, userId: socket.userId });
+                // console.log('✏️ Updating message:', { id, roomId, userId: socket.userId });
                 
                 if (!id || !noiDungMoi || !roomId) {
                     socket.emit('error', { message: 'Missing required update data' });
@@ -201,11 +201,11 @@ const setupSocket = (server) => {
                     return;
                 }
                 
-                console.log('✅ Message updated successfully:', id);
+                // console.log('✅ Message updated successfully:', id);
                 io.to(roomId).emit('message:updated', updated);
                 
             } catch (error) {
-                console.error('❌ Error updating message:', error);
+                // console.error('❌ Error updating message:', error);
                 socket.emit('error', { message: 'Failed to update message', error: error.message });
             }
         });
@@ -213,7 +213,7 @@ const setupSocket = (server) => {
         // Enhanced message deletion with ownership verification
         socket.on('message:delete', async ({ id, roomId }) => {
             try {
-                console.log('🗑️ Deleting message:', { id, roomId, userId: socket.userId });
+                // console.log('🗑️ Deleting message:', { id, roomId, userId: socket.userId });
                 
                 if (!id || !roomId) {
                     socket.emit('error', { message: 'Missing required delete data' });
@@ -245,11 +245,11 @@ const setupSocket = (server) => {
                     return;
                 }
                 
-                console.log('✅ Message deleted successfully:', id);
+                // console.log('✅ Message deleted successfully:', id);
                 io.to(roomId).emit('message:deleted', deleted);
                 
             } catch (error) {
-                console.error('❌ Error deleting message:', error);
+                // console.error('❌ Error deleting message:', error);
                 socket.emit('error', { message: 'Failed to delete message', error: error.message });
             }
         });
@@ -261,7 +261,7 @@ const setupSocket = (server) => {
 
         // Enhanced disconnect handling
         socket.on('disconnect', (reason) => {
-            console.log('🔴 Socket Disconnected:', socket.id, 'User:', socket.userId, 'Reason:', reason);
+            // console.log('🔴 Socket Disconnected:', socket.id, 'User:', socket.userId, 'Reason:', reason);
             
             // Clean up user rooms tracking
             const rooms = userRooms.get(socket.id);
@@ -280,16 +280,16 @@ const setupSocket = (server) => {
 
         // Error handler for any unhandled socket errors
         socket.on('error', (error) => {
-            console.error('❌ Socket Error for', socket.id, 'User:', socket.userId, ':', error);
+            // console.error('❌ Socket Error for', socket.id, 'User:', socket.userId, ':', error);
         });
     });
 
     // Add global error handling
     io.engine.on('connection_error', (err) => {
-        console.error('❌ Socket.IO Connection Error:', err);
+        // console.error('❌ Socket.IO Connection Error:', err);
     });
 
-    console.log('🚀 Socket.IO server configured with enhanced real-time messaging and authentication');
+    // console.log('🚀 Socket.IO server configured with enhanced real-time messaging and authentication');
     return io;
 };
 
