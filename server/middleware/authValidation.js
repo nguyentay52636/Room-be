@@ -27,4 +27,21 @@ const loginValidation = (data) => {
   return schema.validate(data);
 };
 
-module.exports = { registerValidation, loginValidation };
+// Validation cho Facebook user creation - lỏng hơn validation thông thường
+const facebookUserValidation = (data) => {
+  const schema = Joi.object({
+    ten: Joi.string().min(1).required(),
+    email: Joi.string().email().required(),
+    tenDangNhap: Joi.string().min(3).max(50).required(),
+    matKhau: Joi.string().min(1).required(), // Facebook login không cần password mạnh
+    facebookId: Joi.string().required(),
+    vaiTro: Joi.string().required(),
+    anhDaiDien: Joi.string().allow('').optional(),
+    trangThai: Joi.string().valid("hoat_dong", "khoa").default("hoat_dong"),
+    soDienThoai: Joi.string().allow('').optional() // Facebook login có thể không có số điện thoại
+  });
+
+  return schema.validate(data);
+};
+
+module.exports = { registerValidation, loginValidation, facebookUserValidation };
