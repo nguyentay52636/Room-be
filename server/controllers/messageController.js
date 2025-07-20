@@ -1,6 +1,6 @@
 const TinNhan = require('../models/TinNhan');
+const PhongChat = require('../models/PhongChat');
 
-// Lấy tin nhắn theo roomId
 const getMessages = async (req, res) => {
     const { roomId } = req.params;
 
@@ -16,7 +16,6 @@ const getMessages = async (req, res) => {
     }
 };
 
-// Lấy tất cả tin nhắn
 const getAllMessages = async (req, res) => { 
     try { 
         const messages = await TinNhan.find()
@@ -31,7 +30,6 @@ const getAllMessages = async (req, res) => {
     }
 };
 
-// Tạo tin nhắn mới
 const createMessageHandler = async (req, res) => {
     try {
         const { roomId, nguoiGuiId, noiDung, hinhAnh, daDoc, trangThai } = req.body;
@@ -42,7 +40,13 @@ const createMessageHandler = async (req, res) => {
             });
         }
 
-        // Kiểm tra trạng thái hợp lệ
+        const room = await PhongChat.findById(roomId);
+        if (!room) {
+            return res.status(404).json({ 
+                message: 'Không tìm thấy phòng chat' 
+            });
+        }
+
         const validStates = ['sent', 'edited', 'deleted'];
         if (trangThai && !validStates.includes(trangThai)) {
             return res.status(400).json({ 
@@ -61,6 +65,10 @@ const createMessageHandler = async (req, res) => {
 
         const newMessage = await TinNhan.create(messageData);
         
+        // Thêm tin nhắn vào phòng chat
+        room.tinNhan.push(newMessage._id);
+        await room.save();
+        
         // Populate thông tin để trả về
         const populatedMessage = await TinNhan.findById(newMessage._id)
             .populate('nguoiGuiId')
@@ -72,7 +80,6 @@ const createMessageHandler = async (req, res) => {
     }
 };
 
-// Cập nhật tin nhắn
 const updateMessageHandler = async (req, res) => {
     try {
         const { id } = req.params;
@@ -109,10 +116,16 @@ const updateMessageHandler = async (req, res) => {
     }
 };
 
-// Xóa tin nhắn
 const deleteMessageHandler = async (req, res) => {
     try {
         const { id } = req.params;
+
+        const message = await TinNhan.findById(id);
+        if (!message) {
+            return res.status(404).json({ 
+                message: 'Không tìm thấy tin nhắn' 
+            });
+        }
 
         const deleted = await TinNhan.findByIdAndUpdate(
             id,
@@ -122,11 +135,6 @@ const deleteMessageHandler = async (req, res) => {
         .populate('nguoiGuiId')
         .populate('roomId');
 
-        if (!deleted) {
-            return res.status(404).json({ 
-                message: 'Không tìm thấy tin nhắn' 
-            });
-        }
 
         res.json(deleted);
     } catch (error) {
@@ -139,7 +147,7 @@ const deleteMessageHandler = async (req, res) => {
     }
 };
 
-// Đánh dấu tin nhắn đã đọc
+
 const markMessageAsRead = async (req, res) => {
     try {
         const { id } = req.params;
@@ -172,6 +180,13 @@ const markMessageAsRead = async (req, res) => {
 // Helper functions for socket usage
 const createMessage = async (data) => {
     const newMsg = await TinNhan.create(data);
+    
+    // Thêm tin nhắn vào phòng chat
+    await PhongChat.findByIdAndUpdate(
+        data.roomId,
+        { $push: { tinNhan: newMsg._id } }
+    );
+    
     const populatedMsg = await TinNhan.findById(newMsg._id)
         .populate('nguoiGuiId')
         .populate('roomId');
@@ -190,6 +205,9 @@ const updateMessage = async (id, noiDungMoi) => {
 };
 
 const deleteMessage = async (id) => {
+    // Tìm tin nhắn để lấy roomId
+    const message = await TinNhan.findById(id);
+    
     const deleted = await TinNhan.findByIdAndUpdate(
         id,
         { noiDung: '[deleted]', trangThai: 'deleted' },
@@ -197,6 +215,9 @@ const deleteMessage = async (id) => {
     )
     .populate('nguoiGuiId')
     .populate('roomId');
+    
+
+    
     return deleted;
 };
 

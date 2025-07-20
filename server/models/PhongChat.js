@@ -5,7 +5,8 @@ const PhongChatSchema = new mongoose.Schema({
   loaiPhong: { type: String, enum: ['private', 'group'], required: true }, 
   thanhVien: [{ type: mongoose.Schema.Types.ObjectId, ref: 'nguoiDung' }],
   nguoiTao: { type: mongoose.Schema.Types.ObjectId, ref: 'nguoiDung' },
-  anhDaiDien: { type: String }, 
+  anhDaiDien: { type: String },
+  tinNhan: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TinNhan' }],
 }, {
   timestamps: true,
   versionKey: false,
