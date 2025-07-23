@@ -65,6 +65,11 @@
  *           type: string
  *           description: URL ảnh đại diện của phòng chat
  *           example: "https://example.com/room-avatar.jpg"
+ *         tinNhan:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Danh sách ID tin nhắn trong phòng
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -102,6 +107,29 @@
  *           type: string
  *           description: URL ảnh đại diện phòng
  *           example: "https://example.com/room-avatar.jpg"
+ *     PrivateRoomRequest:
+ *       type: object
+ *       required:
+ *         - userId1
+ *         - userId2
+ *       properties:
+ *         userId1:
+ *           type: string
+ *           description: ID người dùng thứ nhất
+ *           example: "507f1f77bcf86cd799439012"
+ *         userId2:
+ *           type: string
+ *           description: ID người dùng thứ hai
+ *           example: "507f1f77bcf86cd799439013"
+ *     AddMessageRequest:
+ *       type: object
+ *       required:
+ *         - messageId
+ *       properties:
+ *         messageId:
+ *           type: string
+ *           description: ID tin nhắn cần thêm vào phòng
+ *           example: "507f1f77bcf86cd799439014"
  */
 
 /**
@@ -127,54 +155,6 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Room'
- *             examples:
- *               success:
- *                 summary: Ví dụ danh sách phòng chat với thông tin đầy đủ
- *                 value:
- *                   - _id: "507f1f77bcf86cd799439011"
- *                     tenPhong: "Nhóm chat ABC"
- *                     loaiPhong: "group"
- *                     thanhVien:
- *                       - _id: "507f1f77bcf86cd799439012"
- *                         ten: "Nguyễn Văn A"
- *                         email: "nguyenvana@example.com"
- *                         tenDangNhap: "nguyenvana"
- *                         anhDaiDien: "https://example.com/avatar1.jpg"
- *                         soDienThoai: "0123456789"
- *                         trangThai: "online"
- *                       - _id: "507f1f77bcf86cd799439013"
- *                         ten: "Trần Thị B"
- *                         email: "tranthib@example.com"
- *                         tenDangNhap: "tranthib"
- *                         anhDaiDien: "https://example.com/avatar2.jpg"
- *                         soDienThoai: "0987654321"
- *                         trangThai: "offline"
- *                     nguoiTao: "507f1f77bcf86cd799439012"
- *                     anhDaiDien: "https://example.com/room-avatar.jpg"
- *                     createdAt: "2023-12-07T10:00:00.000Z"
- *                     updatedAt: "2023-12-07T10:30:00.000Z"
- *                   - _id: "507f1f77bcf86cd799439014"
- *                     tenPhong: null
- *                     loaiPhong: "private"
- *                     thanhVien:
- *                       - _id: "507f1f77bcf86cd799439012"
- *                         ten: "Nguyễn Văn A"
- *                         email: "nguyenvana@example.com"
- *                         tenDangNhap: "nguyenvana"
- *                         anhDaiDien: "https://example.com/avatar1.jpg"
- *                         soDienThoai: "0123456789"
- *                         trangThai: "online"
- *                       - _id: "507f1f77bcf86cd799439015"
- *                         ten: "Lê Văn C"
- *                         email: "levanc@example.com"
- *                         tenDangNhap: "levanc"
- *                         anhDaiDien: "https://example.com/avatar3.jpg"
- *                         soDienThoai: "0555666777"
- *                         trangThai: "online"
- *                     nguoiTao: "507f1f77bcf86cd799439012"
- *                     anhDaiDien: ""
- *                     createdAt: "2023-12-07T09:00:00.000Z"
- *                     updatedAt: "2023-12-07T09:45:00.000Z"
  *       500:
  *         description: Lỗi lấy danh sách phòng chat
  *         content:
@@ -185,6 +165,156 @@
  *                 message:
  *                   type: string
  *                   example: "Lỗi lấy danh sách phòng chat"
+ *                 error:
+ *                   type: object
+ */
+
+/**
+ * @swagger
+ * /api/room/{roomId}:
+ *   get:
+ *     summary: Lấy thông tin phòng chat theo ID
+ *     tags: [Room]
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của phòng chat
+ *         example: "507f1f77bcf86cd799439011"
+ *     responses:
+ *       200:
+ *         description: Thông tin phòng chat với tin nhắn được populate và sắp xếp theo thời gian
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Room'
+ *       404:
+ *         description: Không tìm thấy phòng chat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Không tìm thấy phòng chat"
+ *       500:
+ *         description: Lỗi lấy thông tin phòng chat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi lấy thông tin phòng chat"
+ *                 error:
+ *                   type: object
+ *   put:
+ *     summary: Cập nhật thông tin phòng chat
+ *     tags: [Room]
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của phòng chat cần cập nhật
+ *         example: "507f1f77bcf86cd799439011"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tenPhong:
+ *                 type: string
+ *                 description: Tên phòng chat mới
+ *                 example: "Tên phòng đã cập nhật"
+ *               anhDaiDien:
+ *                 type: string
+ *                 description: URL ảnh đại diện mới
+ *                 example: "https://example.com/new-avatar.jpg"
+ *               thanhVien:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Danh sách thành viên mới
+ *                 example: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
+ *     responses:
+ *       200:
+ *         description: Phòng chat được cập nhật thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Room'
+ *       404:
+ *         description: Không tìm thấy phòng chat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Không tìm thấy phòng chat"
+ *       500:
+ *         description: Lỗi cập nhật phòng chat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi cập nhật phòng chat"
+ *                 error:
+ *                   type: object
+ *   delete:
+ *     summary: Xóa phòng chat
+ *     tags: [Room]
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của phòng chat cần xóa
+ *         example: "507f1f77bcf86cd799439011"
+ *     responses:
+ *       200:
+ *         description: Phòng chat được xóa thành công (cùng với tất cả tin nhắn trong phòng)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Xóa phòng thành công"
+ *       404:
+ *         description: Không tìm thấy phòng chat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Không tìm thấy phòng chat"
+ *       500:
+ *         description: Lỗi xóa phòng chat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi xóa phòng"
  *                 error:
  *                   type: object
  */
@@ -216,12 +346,6 @@
  *                 loaiPhong: "private"
  *                 thanhVien: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
  *                 nguoiTao: "507f1f77bcf86cd799439012"
- *             minimal_group:
- *               summary: Tạo phòng nhóm với thông tin tối thiểu
- *               value:
- *                 tenPhong: "Nhóm chat"
- *                 loaiPhong: "group"
- *                 thanhVien: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"]
  *     responses:
  *       201:
  *         description: Phòng chat được tạo thành công
@@ -229,15 +353,6 @@
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Room'
- *             example:
- *               _id: "507f1f77bcf86cd799439011"
- *               tenPhong: "Nhóm chat dự án ABC"
- *               loaiPhong: "group"
- *               thanhVien: ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013", "507f1f77bcf86cd799439014"]
- *               nguoiTao: "507f1f77bcf86cd799439012"
- *               anhDaiDien: "https://example.com/room-avatar.jpg"
- *               createdAt: "2023-12-07T10:30:00.000Z"
- *               updatedAt: "2023-12-07T10:30:00.000Z"
  *       400:
  *         description: Dữ liệu không hợp lệ
  *         content:
@@ -247,19 +362,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *             examples:
- *               missing_required:
- *                 summary: Thiếu thông tin bắt buộc
- *                 value:
- *                   message: "Thiếu thông tin phòng chat"
- *               invalid_room_type:
- *                 summary: Loại phòng không hợp lệ
- *                 value:
- *                   message: "Loại phòng không hợp lệ. Các giá trị cho phép: private, group"
- *               empty_members:
- *                 summary: Danh sách thành viên trống
- *                 value:
- *                   message: "Danh sách thành viên không được để trống"
+ *                   example: "Thiếu thông tin phòng chat"
  *       500:
  *         description: Lỗi tạo phòng chat
  *         content:
@@ -276,9 +379,87 @@
 
 /**
  * @swagger
- * /api/room/{roomId}:
- *   delete:
- *     summary: Xóa phòng chat
+ * /api/room/find-or-create-private:
+ *   post:
+ *     summary: Tìm hoặc tạo phòng chat private giữa 2 người dùng
+ *     tags: [Room]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PrivateRoomRequest'
+ *           example:
+ *             userId1: "507f1f77bcf86cd799439012"
+ *             userId2: "507f1f77bcf86cd799439013"
+ *     responses:
+ *       200:
+ *         description: Tìm thấy phòng chat private đã tồn tại
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 room:
+ *                   $ref: '#/components/schemas/Room'
+ *                 isNewRoom:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Phòng chat đã tồn tại"
+ *       201:
+ *         description: Tạo phòng chat private mới thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 room:
+ *                   $ref: '#/components/schemas/Room'
+ *                 isNewRoom:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Tạo phòng chat mới thành công"
+ *       400:
+ *         description: Dữ liệu không hợp lệ
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *             examples:
+ *               missing_users:
+ *                 summary: Thiếu thông tin người dùng
+ *                 value:
+ *                   message: "Thiếu thông tin userId1 hoặc userId2"
+ *               same_user:
+ *                 summary: Cùng một người dùng
+ *                 value:
+ *                   message: "Không thể tạo phòng chat với chính mình"
+ *       500:
+ *         description: Lỗi tìm/tạo phòng chat private
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi tìm/tạo phòng chat private"
+ *                 error:
+ *                   type: object
+ */
+
+/**
+ * @swagger
+ * /api/room/{roomId}/message:
+ *   post:
+ *     summary: Thêm tin nhắn vào phòng chat
  *     tags: [Room]
  *     parameters:
  *       - in: path
@@ -286,11 +467,19 @@
  *         required: true
  *         schema:
  *           type: string
- *         description: ID của phòng chat cần xóa
+ *         description: ID của phòng chat
  *         example: "507f1f77bcf86cd799439011"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AddMessageRequest'
+ *           example:
+ *             messageId: "507f1f77bcf86cd799439014"
  *     responses:
  *       200:
- *         description: Phòng chat được xóa thành công
+ *         description: Thêm tin nhắn vào phòng thành công
  *         content:
  *           application/json:
  *             schema:
@@ -298,9 +487,9 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Xóa phòng thành công"
- *       400:
- *         description: ID phòng chat không hợp lệ
+ *                   example: "Thêm tin nhắn vào phòng thành công"
+ *       404:
+ *         description: Không tìm thấy phòng chat hoặc tin nhắn
  *         content:
  *           application/json:
  *             schema:
@@ -308,9 +497,61 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "ID phòng chat không hợp lệ"
+ *             examples:
+ *               room_not_found:
+ *                 summary: Không tìm thấy phòng chat
+ *                 value:
+ *                   message: "Không tìm thấy phòng chat"
+ *               message_not_found:
+ *                 summary: Không tìm thấy tin nhắn
+ *                 value:
+ *                   message: "Không tìm thấy tin nhắn"
+ *       500:
+ *         description: Lỗi thêm tin nhắn vào phòng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lỗi thêm tin nhắn vào phòng"
  *                 error:
  *                   type: object
+ */
+
+/**
+ * @swagger
+ * /api/room/{roomId}/message/{messageId}:
+ *   delete:
+ *     summary: Xóa tin nhắn khỏi phòng chat
+ *     tags: [Room]
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của phòng chat
+ *         example: "507f1f77bcf86cd799439011"
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID của tin nhắn cần xóa khỏi phòng
+ *         example: "507f1f77bcf86cd799439014"
+ *     responses:
+ *       200:
+ *         description: Xóa tin nhắn khỏi phòng thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Xóa tin nhắn khỏi phòng thành công"
  *       404:
  *         description: Không tìm thấy phòng chat
  *         content:
@@ -322,7 +563,7 @@
  *                   type: string
  *                   example: "Không tìm thấy phòng chat"
  *       500:
- *         description: Lỗi xóa phòng chat
+ *         description: Lỗi xóa tin nhắn khỏi phòng
  *         content:
  *           application/json:
  *             schema:
@@ -330,7 +571,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Lỗi xóa phòng"
+ *                   example: "Lỗi xóa tin nhắn khỏi phòng"
  *                 error:
  *                   type: object
  */
