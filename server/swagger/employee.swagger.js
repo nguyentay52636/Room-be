@@ -144,7 +144,7 @@
  *         description: Employee not found
  *       500:
  *         description: Get employee by id failed
- *   put:
+ *   patch:
  *     summary: Update employee
  *     tags: [Employee]
  *     parameters:
@@ -169,9 +169,13 @@
  *                 type: string
  *               luong:
  *                 type: number
+ *               hieuSuat:
+ *                 type: number
  *               ngayVaoLam:
  *                 type: string
  *                 format: date
+ *               trangThai:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Update employee successfully
@@ -182,7 +186,7 @@
  *               properties:
  *                 message:
  *                   type: string
- *                 employee:
+ *                 data:
  *                   $ref: '#/components/schemas/Employee'
  *       400:
  *         description: Invalid input

@@ -45,24 +45,49 @@ const employeeController = {
         .json({ message: "Create employee failed", error: err });
     }
   },
-  updateEmployee: async (req, res) => {
-    try {
-      const employeeId = req.params.id;
-      const { nguoiDungId, phongBan, chucVu, luong, ngayVaoLam } = req.body;
-      const employee = await Employee.findByIdAndUpdate(employeeId, req.body, {
-        new: true,
-      });
-      if (!employee)
-        return res.status(404).json({ message: "Employee not found" });
-      return res
-        .status(200)
-        .json({ message: "Update employee successfully", employee });
-    } catch (err) {
-      return res
-        .status(500)
-        .json({ message: "Update employee failed", error: err });
+updateEmployee: async (req, res) => {
+  try {
+    const employeeId = req.params.id;
+
+    const {
+      phongBan,
+      chucVu,
+      luong,
+      hieuSuat,
+      ngayVaoLam,
+      trangThai,
+      nguoiDungId,
+    } = req.body;
+
+    const updateData = {
+      phongBan,
+      chucVu,
+      luong,
+      hieuSuat,
+      ngayVaoLam,
+      trangThai,
+      ...(nguoiDungId && { nguoiDungId }),
+    };
+
+    const employee = await Employee.findByIdAndUpdate(employeeId, updateData, {
+      new: true,
+    });
+
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
     }
-  },
+
+    return res.status(200).json({
+      message: "Update employee successfully",
+      data: employee,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "Update employee failed",
+      error: err.message || err,
+    });
+  }
+},
   deleteEmployee: async (req, res) => {
     try {
       const employeeId = req.params.id;

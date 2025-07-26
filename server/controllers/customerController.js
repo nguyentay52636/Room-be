@@ -108,64 +108,61 @@ const createCustomer = async (req, res) => {
 };
 
 // Update customer
+
 const updateCustomer = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { nguoiDungId, diaChi, loai, tongChiTieu, soBdsDangThue, soBdsYeuThich, soDanhGia, diemTrungBinh, bdsDangThueHienTai, ngayKetThucHopDong, lanHoatDongGanNhat, ghiChu } = req.body;
+    const customerId = req.params.id;
 
-    if (!id) {
-      return res.status(400).json({
-        message: "Customer ID is required"
-      });
-    }
+    const {
+      nguoiDungId,
+      diaChi,
+      loai,
+      tongChiTieu,
+      soBdsDangThue,
+      soBdsYeuThich,
+      soDanhGia,
+      diemTrungBinh,
+      bdsDangThueHienTai,
+      ngayKetThucHopDong,
+      lanHoatDongGanNhat,
+      ghiChu,
+    } = req.body;
 
-    const customer = await Customer.findById(id);
+    const updateData = {
+      diaChi,
+      loai,
+      tongChiTieu,
+      soBdsDangThue,
+      soBdsYeuThich,
+      soDanhGia,
+      diemTrungBinh,
+      bdsDangThueHienTai,
+      ngayKetThucHopDong,
+      lanHoatDongGanNhat,
+      ghiChu,
+      ...(nguoiDungId && { nguoiDungId }),
+    };
+
+    const customer = await Customer.findByIdAndUpdate(customerId, updateData, {
+      new: true,
+    }).populate("nguoiDungId")
+
     if (!customer) {
-      return res.status(400).json({
-        message: "Customer not found"
-      });
+      return res.status(404).json({ message: "Customer not found" });
     }
 
-    // Check if user exists if nguoiDungId is being updated
-    if (nguoiDungId) {
-      const existingUser = await NguoiDung.findById(nguoiDungId);
-      if (!existingUser) {
-        return res.status(400).json({
-          message: "Nguoi dung not found"
-        });
-      }
-    }
-
-    const updatedCustomer = await Customer.findByIdAndUpdate(
-      id,
-      {
-        nguoiDungId,
-        diaChi,
-        loai,
-        tongChiTieu,
-        soBdsDangThue,
-        soBdsYeuThich,
-        soDanhGia,
-        diemTrungBinh,
-        bdsDangThueHienTai,
-        ngayKetThucHopDong,
-        lanHoatDongGanNhat,
-        ghiChu
-      },
-      { new: true }
-    ).populate("nguoiDungId", "ten email soDienThoai");
-
-    res.status(200).json({
+    return res.status(200).json({
       message: "Update customer successfully",
-      customer: updatedCustomer
+      data: customer,
     });
-  } catch (error) {
-    res.status(500).json({
+  } catch (err) {
+    return res.status(500).json({
       message: "Update customer failed",
-      error: error.message
+      error: err.message || err,
     });
   }
-};
+}
+
 
 // Delete customer
 const deleteCustomer = async (req, res) => {
